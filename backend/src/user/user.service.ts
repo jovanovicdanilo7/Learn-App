@@ -1,4 +1,4 @@
-import { GetCommand, PutCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
+import { DeleteCommand, GetCommand, PutCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
 import { BadRequestException, Injectable, UnauthorizedException } from "@nestjs/common";
 import { dbDocClient } from "src/database/dynamodb.service";
 import { v4 as uuidv4 } from 'uuid'
@@ -77,5 +77,14 @@ export class UserService {
     );
 
     return result.Item;
+  }
+
+  async deleteUserById(userId: string) {
+    const result = await dbDocClient.send(
+      new DeleteCommand({
+        TableName: 'Users',
+        Key: { id: userId }
+      }),
+    );
   }
 }

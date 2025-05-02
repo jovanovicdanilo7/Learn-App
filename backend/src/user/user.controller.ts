@@ -1,4 +1,4 @@
-import { Body, Post, Controller, Get, UseGuards, Req, HttpCode } from "@nestjs/common";
+import { Body, Post, Controller, Get, UseGuards, Req, HttpCode, Delete } from "@nestjs/common";
 import { AuthService, UserService } from "./user.service";
 import { CreateUserDto } from "./create-user.dto";
 import { AuthGuard } from '@nestjs/passport';
@@ -38,5 +38,12 @@ export class UserController {
     @HttpCode(200)
     async getMe(@GetUser() user: { id: string, email: string }) {
         return this.userService.getUserById(user.id)
+    }
+
+    @Delete('me')
+    @UseGuards(AuthGuard('jwt'))
+    @HttpCode(204)
+    async deleteMe(@GetUser() user: { id: string, email: string }) {
+        return this.userService.deleteUserById(user.id);
     }
 }
