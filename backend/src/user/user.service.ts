@@ -1,4 +1,4 @@
-import { PutCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
+import { GetCommand, PutCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
 import { BadRequestException, Injectable, UnauthorizedException } from "@nestjs/common";
 import { dbDocClient } from "src/database/dynamodb.service";
 import { v4 as uuidv4 } from 'uuid'
@@ -7,7 +7,7 @@ import { CreateUserDto } from "./create-user.dto";
 import { JwtService } from "@nestjs/jwt";
 
 @Injectable()
-export class UserService {
+export class AuthService {
     constructor(private jwtService: JwtService) {}
 
     async register(createUserDto: CreateUserDto) {
@@ -65,4 +65,17 @@ export class UserService {
             user,
         };
     }
+}
+
+export class UserService {
+  async getUserById(userId: string) {
+    const result = await dbDocClient.send(
+      new GetCommand({
+        TableName: 'Users',
+        Key: { id: userId }
+      }),
+    );
+
+    return result.Item;
+  }
 }

@@ -1,21 +1,22 @@
 import { Body, Post, Controller, Get, UseGuards, Req, HttpCode } from "@nestjs/common";
-import { UserService } from "./user.service";
+import { AuthService, UserService } from "./user.service";
 import { CreateUserDto } from "./create-user.dto";
 import { AuthGuard } from '@nestjs/passport';
+import { GetUser } from "src/auth/get-user.decorator";
 
 @Controller('auth')
-export class UserController {
-    constructor(private readonly userService: UserService) {}
+export class AuthController {
+    constructor(private readonly authService: AuthService) {}
 
     @Post('register')
     async register(@Body() createUserDto: CreateUserDto) {
-        return this.userService.register(createUserDto);
+        return this.authService.register(createUserDto);
     }
 
     @Post('login')
     @HttpCode(200)
     async login(@Body() body: { email: string, password: string }) {
-        return this.userService.login(body);
+        return this.authService.login(body);
     }
 
     @Get('logout')
@@ -25,5 +26,17 @@ export class UserController {
         return {
             message: 'Logout successful',
         };
+    }
+}
+
+@Controller('user')
+export class UserController {
+    constructor(private userService: UserService) {}
+
+    @Get('me')
+    @UseGuards(AuthGuard('jwt'))
+    @HttpCode(200)
+    async getMe(@GetUser() user: { id: string, email: string }) {
+        return this.userService.getUserById(user.id)
     }
 }
