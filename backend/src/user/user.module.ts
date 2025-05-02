@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
-import { UserController } from "./user.controller";
-import { UserService } from "./user.service";
+import { AuthController, UserController } from "./user.controller";
+import { AuthService, UserService } from "./user.service";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
 import { JwtStrategy } from "src/auth/jwt.strategy";
@@ -13,7 +13,7 @@ import { JwtStrategy } from "src/auth/jwt.strategy";
           signOptions: { expiresIn: process.env.JWT_EXPIRES_IN },
         }),
       ],
-    controllers: [UserController],
-    providers: [UserService, JwtStrategy]
+    controllers: [AuthController, UserController],
+    providers: [AuthService, UserService, JwtStrategy]
 })
 export class UserModule {}
