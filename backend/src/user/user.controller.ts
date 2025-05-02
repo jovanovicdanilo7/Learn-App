@@ -46,4 +46,14 @@ export class UserController {
     async deleteMe(@GetUser() user: { id: string, email: string }) {
         return this.userService.deleteUserById(user.id);
     }
+
+    @Post('upload-photo')
+    @UseGuards(AuthGuard('jwt'))
+    @HttpCode(200)
+    async uploadPhoto(
+        @GetUser() user: { id: string, email: string },
+        @Body() body: { data: string }
+    ) {
+        return this.userService.uploadUsersPhoto(user.id, body.data);
+    }
 }

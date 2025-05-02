@@ -1,10 +1,12 @@
-import { DeleteCommand, GetCommand, PutCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
+import { DeleteCommand, GetCommand, PutCommand, ScanCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 import { BadRequestException, Injectable, UnauthorizedException } from "@nestjs/common";
 import { dbDocClient } from "src/database/dynamodb.service";
 import { v4 as uuidv4 } from 'uuid'
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from "./create-user.dto";
 import { JwtService } from "@nestjs/jwt";
+import * as path from "path";
+import { writeFile } from "fs/promises";
 
 @Injectable()
 export class AuthService {
@@ -86,5 +88,40 @@ export class UserService {
         Key: { id: userId }
       }),
     );
+  }
+
+  async uploadUsersPhoto(userId: string, base64Data: string) {
+    const matches = base64Data.match(/^data:image\/(\w+);base64,(.+)$/);
+    if (!matches) {
+      throw new BadRequestException({
+        errorCode: 0,
+        message: 'Invalid image data',
+      });
+    }
+
+    const ext = matches[1];
+    const buffer = Buffer.from(matches[2], 'base64');
+    const filename = `${uuidv4()}.${ext}`;
+    const filePath = path.join(__dirname, '..', '..', 'uploads', 'photos', filename);
+
+    await writeFile(filePath, buffer);
+
+    const photoUrl = `${process.env.HOST_URL}/uploads/photos/${filename}`; // Replace for prod
+
+    await dbDocClient.send(
+      new UpdateCommand({
+        TableName: 'Users',
+        Key: { id: userId },
+        UpdateExpression: 'SET photo = :photo',
+        ExpressionAttributeValues: {
+          ':photo': photoUrl,
+        },
+      }),
+    );
+
+    return {
+      message: 'Photo uploaded successfully',
+      photoUrl,
+    };
   }
 }
