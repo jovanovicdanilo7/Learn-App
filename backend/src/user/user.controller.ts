@@ -13,6 +13,7 @@ export class UserController {
     }
 
     @Post('login')
+    @HttpCode(200)
     async login(@Body() body: { email: string, password: string }) {
         return this.userService.login(body);
     }

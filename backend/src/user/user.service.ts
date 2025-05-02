@@ -1,5 +1,5 @@
-import { GetCommand, PutCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { PutCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
+import { BadRequestException, Injectable, UnauthorizedException } from "@nestjs/common";
 import { dbDocClient } from "src/database/dynamodb.service";
 import { v4 as uuidv4 } from 'uuid'
 import * as bcrypt from 'bcrypt';
@@ -51,7 +51,7 @@ export class UserService {
         const user = result.Items?.[0];
 
         if (!user || !(await bcrypt.compare(password, user.password))) {
-            throw new UnauthorizedException({
+            throw new BadRequestException({
                 errorCode: 0,
                 message: 'Invalid credentials',
               });
