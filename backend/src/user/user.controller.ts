@@ -1,4 +1,4 @@
-import { Body, Post, Controller, Get, UseGuards, Req } from "@nestjs/common";
+import { Body, Post, Controller, Get, UseGuards, Req, HttpCode } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { CreateUserDto } from "./create-user.dto";
 import { AuthGuard } from '@nestjs/passport';
@@ -19,7 +19,8 @@ export class UserController {
 
     @Get('logout')
     @UseGuards(AuthGuard('jwt'))
-    logout(@Req() req) {
+    @HttpCode(200)
+    logout() {
         return {
             message: 'Logout successful',
         };
