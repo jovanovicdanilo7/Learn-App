@@ -2,6 +2,8 @@ import { dbDocClient } from "src/database/dynamodb.service";
 import { CreateTrainingDto } from "./create-training.dto";
 import { v4 as uuidv4 } from 'uuid'
 import { PutCommand } from "@aws-sdk/lib-dynamodb";
+import { ScanCommand } from "@aws-sdk/client-dynamodb";
+import { unmarshall } from '@aws-sdk/util-dynamodb';
 
 export class TrainingService {
     async createTraining(training: CreateTrainingDto) {
@@ -26,5 +28,15 @@ export class TrainingService {
         return {
             newTraining,
         };
+    }
+
+    async getAllTrainings() {
+        const result = await dbDocClient.send(
+            new ScanCommand({
+                TableName: 'Trainings',
+            }),
+        );
+
+        return result.Items?.map(item => unmarshall(item));
     }
 }

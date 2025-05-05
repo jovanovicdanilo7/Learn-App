@@ -1,4 +1,4 @@
-import { Body, HttpCode, Post, Controller } from "@nestjs/common";
+import { Body, HttpCode, Post, Controller, Get } from "@nestjs/common";
 import { TrainingService } from "./training.service";
 import { CreateTrainingDto } from "./create-training.dto";
 
@@ -10,5 +10,11 @@ export class TrainingControler {
     @HttpCode(200)
     async createTraining(@Body() training: CreateTrainingDto) {
         return this.trainingService.createTraining(training);
+    }
+
+    @Get('/')
+    @HttpCode(200)
+    async getAllTrainings() {
+        return this.trainingService.getAllTrainings();
     }
 }
