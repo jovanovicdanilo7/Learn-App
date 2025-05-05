@@ -106,7 +106,7 @@ export class UserService {
 
     await writeFile(filePath, buffer);
 
-    const photoUrl = `${process.env.HOST_URL}/uploads/photos/${filename}`; // Replace for prod
+    const photoUrl = `${process.env.HOST_URL}/uploads/photos/${filename}`;
 
     await dbDocClient.send(
       new UpdateCommand({
@@ -123,5 +123,25 @@ export class UserService {
       message: 'Photo uploaded successfully',
       photoUrl,
     };
+  }
+
+  async updatePassword(userId: string, newPassword: string) {
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+  
+    await dbDocClient.send(
+      new UpdateCommand({
+        TableName: 'Users',
+        Key: { id: userId },
+        UpdateExpression: 'SET #pwd = :password',
+        ExpressionAttributeNames: {
+          '#pwd': 'password'
+        },
+        ExpressionAttributeValues: {
+          ':password': hashedPassword
+        }
+      }),
+    );
+
+    return { message: 'Password updated successfully' };
   }
 }

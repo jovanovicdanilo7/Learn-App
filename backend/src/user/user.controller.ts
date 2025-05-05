@@ -1,4 +1,4 @@
-import { Body, Post, Controller, Get, UseGuards, Req, HttpCode, Delete } from "@nestjs/common";
+import { Body, Post, Controller, Get, UseGuards, Req, HttpCode, Delete, Put } from "@nestjs/common";
 import { AuthService, UserService } from "./user.service";
 import { CreateUserDto } from "./create-user.dto";
 import { AuthGuard } from '@nestjs/passport';
@@ -55,5 +55,15 @@ export class UserController {
         @Body() body: { data: string }
     ) {
         return this.userService.uploadUsersPhoto(user.id, body.data);
+    }
+
+    @Put('update-password')
+    @UseGuards(AuthGuard('jwt'))
+    @HttpCode(200)
+    async changePassword(
+        @GetUser() user: { id: string, email: string },
+        @Body() body: { newPassword: string }
+    ) {
+        return this.userService.updatePassword(user.id, body.newPassword);
     }
 }
