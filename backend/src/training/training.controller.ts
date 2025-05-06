@@ -1,4 +1,4 @@
-import { Body, HttpCode, Post, Controller, Get } from "@nestjs/common";
+import { Body, HttpCode, Post, Controller, Get, Query } from "@nestjs/common";
 import { TrainingService } from "./training.service";
 import { CreateTrainingDto } from "./create-training.dto";
 
@@ -16,5 +16,15 @@ export class TrainingControler {
     @HttpCode(200)
     async getAllTrainings() {
         return this.trainingService.getAllTrainings();
+    }
+
+    @Get('search')
+    @HttpCode(200)
+    async searchTrainings(
+      @Query('name') name?: string,
+      @Query('trainingType') trainingType?: string,
+      @Query('date') date?: string
+    ) {
+      return this.trainingService.searchTrainings({ name, trainingType, date });
     }
 }
