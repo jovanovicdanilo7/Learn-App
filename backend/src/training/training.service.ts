@@ -39,4 +39,34 @@ export class TrainingService {
 
         return result.Items?.map(item => unmarshall(item));
     }
+
+    async searchTrainings(filters: {
+        name?: string;
+        trainingType?: string;
+        date?: string;
+      }) {
+        const result = await dbDocClient.send(
+          new ScanCommand({
+            TableName: 'Trainings',
+          }),
+        );
+      
+        const trainings = result.Items?.map(item => unmarshall(item)) ?? [];
+
+        return trainings.filter(training => {
+          const matchesName = filters.name
+            ? training.name?.toLowerCase().includes(filters.name.toLowerCase())
+            : true;
+
+          const matchesType = filters.trainingType
+            ? training.type?.trainingType?.toLowerCase().includes(filters.trainingType.toLowerCase())
+            : true;
+
+          const matchesDate = filters.date
+            ? training.date === filters.date
+            : true;
+
+          return matchesName && matchesType && matchesDate;
+        });
+      }      
 }
