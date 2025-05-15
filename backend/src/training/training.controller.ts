@@ -21,10 +21,11 @@ export class TrainingControler {
     @Get('search')
     @HttpCode(200)
     async searchTrainings(
-      @Query('name') name?: string,
-      @Query('trainingType') trainingType?: string,
-      @Query('date') date?: string
+      @Query('dateFrom') dateFrom?: string,
+      @Query('dateTo') dateTo?: string,
+      @Query('specialization') specialization?: string,
+      @Query('trainerName') trainerName?: string,
     ) {
-      return this.trainingService.searchTrainings({ name, trainingType, date });
+      return this.trainingService.searchTrainings({ dateFrom, dateTo, specialization, trainerName });
     }
 }
