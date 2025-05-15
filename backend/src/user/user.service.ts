@@ -85,9 +85,12 @@ export class UserService {
     const result = await dbDocClient.send(
       new DeleteCommand({
         TableName: 'Users',
-        Key: { id: userId }
+        Key: { id: userId },
+        ReturnValues: 'ALL_OLD'
       }),
     );
+
+    return result.Attributes;
   }
 
   async uploadUsersPhoto(userId: string, base64Data: string) {
