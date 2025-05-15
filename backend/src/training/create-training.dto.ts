@@ -44,4 +44,9 @@ import {
     @IsNotEmpty()
     description: string;
   }
+
+  export interface ModifiedTrainings extends CreateTrainingDto {
+    trainerName: string;
+    specialization: string;
+  }
   
