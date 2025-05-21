@@ -1,0 +1,150 @@
+import { useForm } from 'react-hook-form';
+import { faEye, faLock, faUserTie, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import ReCAPTCHA from 'react-google-recaptcha';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+
+import Input from '../../common/Input/Input';
+import Button from '../../common/Button/Button';
+
+type LoginFormInputs = {
+  email: string;
+  password: string;
+};
+
+function LoginForm() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormInputs>();
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [authError, setAuthError] = useState('');
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [captchaError, setCaptchaError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const onSubmit = async (data: LoginFormInputs) => {
+    if (!captchaToken) {
+      setCaptchaError('Please verify that you are not a robot.');
+      return;
+    }
+
+    try {
+      setAuthError('');
+      setCaptchaError('');
+      setLoading(true);
+
+      const response = await axios.post('http://localhost:8000/auth/login', {
+        ...data,
+        captchaToken,
+      });
+
+      if (response.status === 200) {
+        localStorage.setItem('token', response.data.token);
+        navigate('/');
+      }
+    } catch (err) {
+      setAuthError('Wrong email or password');
+      console.error('Login failed:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onCaptchaChange = (token: string | null) => {
+    setCaptchaToken(token);
+    if (token) setCaptchaError('');
+  };
+
+  return (
+    <div className="relative flex flex-col items-center justify-center min-h-[70vh] px-4 font-montserrat my-10">
+      <div className={loading ? 'blur-sm pointer-events-none' : ''}>
+        <h2 className="text-2xl font-bold mb-1">Sign In</h2>
+        <p className="text-gray-500 mb-6">Welcome back</p>
+
+        <form className="w-full max-w-xs" onSubmit={handleSubmit(onSubmit)}>
+          <label className="block text-sm mb-1 font-bold text-gray-700">Email</label>
+          <div className={`flex items-center border rounded-md mb-3 px-3 py-3 ${errors.email ? 'border-red-500 bg-red-50' : 'bg-gray-100'}`}>
+            <span className={`mr-2 ${errors.email ? 'text-red-500' : 'text-gray-500'}`}>
+              <FontAwesomeIcon icon={faUserTie} />
+            </span>
+            <Input
+              type="text"
+              placeholder="Enter email"
+              {...register('email', { required: true })}
+              disabled={loading}
+            />
+          </div>
+          {errors.email && <p className="text-red-500 text-sm mb-3">Email is required</p>}
+
+          <label className="block text-sm mb-1 font-bold text-gray-700">Password</label>
+          <div className={`flex items-center border rounded-md mb-5 px-3 py-1 ${errors.password ? 'border-red-500 bg-red-50' : 'bg-gray-100'}`}>
+            <span className={`mr-2 ${errors.password ? 'text-red-500' : 'text-gray-500'}`}>
+              <FontAwesomeIcon icon={faLock} />
+            </span>
+            <Input
+              type={showPassword ? 'text' : 'password'}
+              placeholder="Enter password"
+              {...register('password', { required: true })}
+              disabled={loading}
+            />
+            <Button
+              onClick={() => setShowPassword(!showPassword)}
+              variant="icon"
+              type="button"
+              disabled={loading}
+            >
+              <FontAwesomeIcon icon={faEye} />
+            </Button>
+          </div>
+          {errors.password && <p className="text-red-500 text-sm mb-3">Password is required</p>}
+
+          {authError && <p className="text-red-500 text-sm mb-3">{authError}</p>}
+
+          <div className="my-7 flex justify-center flex-col items-center">
+            <ReCAPTCHA
+              sitekey={process.env.REACT_APP_SITE_KEY || ''}
+              onChange={onCaptchaChange}
+            />
+            {captchaError && <p className="text-red-500 text-sm mt-2">{captchaError}</p>}
+          </div>
+
+          <Button type="submit" variant="primary" className="w-full mb-5" disabled={loading}>
+            Sign In
+          </Button>
+
+          <div className="text-center text-sm font-bold text-gray-700 mb-4 uppercase">or</div>
+
+          <p className="text-center text-sm font-medium">
+            Don’t have an account?{' '}
+            <a href="/register" className="font-semibold text-purple-700 hover:underline">
+              Sign up
+            </a>
+          </p>
+        </form>
+      </div>
+
+      {/* Loading overlay */}
+      {loading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-70 backdrop-blur-sm z-50">
+          <FontAwesomeIcon
+            icon={faSpinner}
+            spin
+            size="4x"
+            className="text-purple-700"
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
+
+
+
+export default LoginForm;
