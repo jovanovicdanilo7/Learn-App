@@ -19,7 +19,7 @@ function Header() {
 
         {!isLoginPage && (
           <div>
-            <Navigation />
+            <Navigation currentPath={location.pathname}/>
           </div>
         )}
       </div>
