@@ -2,6 +2,8 @@ import { Link } from 'react-router-dom';
 
 import logo from '../../../images/logo.png'
 import Button from '../Button/Button';
+import { faFacebook, faTwitter, faYoutube } from '@fortawesome/free-brands-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 function Footer() {
   return (
@@ -78,13 +80,13 @@ function Footer() {
         <p className="mt-4 md:mt-0">© 2023 Learn, Inc. · Privacy · Terms</p>
         <div className="flex space-x-4 mt-4 md:mt-0 text-[#6D5BD0] text-xl">
           <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
-              <i className="fab fa-twitter hover:opacity-70 transition-opacity"></i>
+              <FontAwesomeIcon icon={faTwitter} />
           </a>
           <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
-              <i className="fab fa-facebook hover:opacity-70 transition-opacity"></i>
+              <FontAwesomeIcon icon={faFacebook} />
           </a>
           <a href="https://youtube.com" target="_blank" rel="noopener noreferrer">
-              <i className="fab fa-youtube hover:opacity-70 transition-opacity"></i>
+              <FontAwesomeIcon icon={faYoutube} />
           </a>
         </div>
       </div>
