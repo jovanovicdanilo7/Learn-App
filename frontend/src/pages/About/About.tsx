@@ -10,7 +10,7 @@ function About() {
     <div className="min-h-screen flex flex-col">
       <Header />
 
-      <main className="flex-grow bg-white px-4 py-12 font-montserrat">
+      <main className="flex-grow bg-white font-montserrat mt-10">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl font-bold text-gray-900 mb-6">About Us</h1>
           <p className="text-lg text-gray-500">
