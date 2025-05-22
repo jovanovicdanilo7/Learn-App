@@ -5,6 +5,7 @@ import { join } from 'path';
 import { ConfigModule } from '@nestjs/config';
 import { TrainingModule } from './training/training.module';
 import { TrainingTypeModule } from './training-type/training-type.module';
+import { SpecializationsModule } from './specialization/specialization.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { TrainingTypeModule } from './training-type/training-type.module';
     UserModule,
     TrainingModule,
     TrainingTypeModule,
+    SpecializationsModule
   ],
 })
 export class AppModule {}

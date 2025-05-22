@@ -2,11 +2,11 @@ import { PutCommand } from "@aws-sdk/lib-dynamodb";
 import { dbDocClient } from "../database/dynamodb.service";
 
 const trainingTypes = [
-  { id: "type-001", trainingType: "Webinar" },
-  { id: "type-002", trainingType: "Workshop" },
-  { id: "type-003", trainingType: "Bootcamp" },
-  { id: "type-004", trainingType: "Lecture" },
-  { id: "type-005", trainingType: "Mentorship" },
+  { id: "000001", trainingType: "Webinar" },
+  { id: "000002", trainingType: "Workshop" },
+  { id: "000003", trainingType: "Bootcamp" },
+  { id: "000004", trainingType: "Lecture" },
+  { id: "000005", trainingType: "Mentorship" },
 ];
 
 async function seedTrainingTypes() {
