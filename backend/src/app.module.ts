@@ -6,6 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TrainingModule } from './training/training.module';
 import { TrainingTypeModule } from './training-type/training-type.module';
 import { SpecializationsModule } from './specialization/specialization.module';
+import { TrainerModule } from './trainer/trainer.module';
 
 @Module({
   imports: [
@@ -17,7 +18,8 @@ import { SpecializationsModule } from './specialization/specialization.module';
     UserModule,
     TrainingModule,
     TrainingTypeModule,
-    SpecializationsModule
+    SpecializationsModule,
+    TrainerModule,
   ],
 })
 export class AppModule {}
