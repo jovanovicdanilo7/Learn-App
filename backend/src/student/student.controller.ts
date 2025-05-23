@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, Post, Res } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, Post, Res } from "@nestjs/common";
 import { Response } from "express";
 import { StudentService } from "./student.service";
 
@@ -27,5 +27,11 @@ export class StudentController {
     });
 
     return { credentials };
+  }
+
+  @Get()
+  @HttpCode(200)
+  getTrainers() {
+    return this.studentService.getAllStudents();
   }
 }
