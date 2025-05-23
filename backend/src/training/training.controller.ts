@@ -25,7 +25,14 @@ export class TrainingControler {
       @Query('dateTo') dateTo?: string,
       @Query('specialization') specialization?: string,
       @Query('trainerName') trainerName?: string,
+      @Query('studentName') studentName?: string
     ) {
-      return this.trainingService.searchTrainings({ dateFrom, dateTo, specialization, trainerName });
+      return this.trainingService.searchTrainings({
+        dateFrom,
+        dateTo,
+        specialization,
+        trainerName,
+        studentName,
+      });
     }
 }
