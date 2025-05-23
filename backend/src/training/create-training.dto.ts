@@ -48,5 +48,6 @@ import {
   export interface ModifiedTrainings extends CreateTrainingDto {
     trainerName: string;
     specialization: string;
+    studentName: string;
   }
   
