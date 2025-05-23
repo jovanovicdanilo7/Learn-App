@@ -27,10 +27,12 @@ const {
   const [loading, setLoading] = useState(false);
   const [showCredentials, setShowCredentials] = useState(false);
   const [credentials, setCredentials] = useState<{ username: string; password: string } | null>(null);
+  const [emailError, setEmailError] = useState('');
 
   const onSubmit = async (data: FormData) => {
     try {
       setLoading(true);
+      setEmailError('');
 
       const response = await axios.post("http://localhost:8000/students", {
         firstName: data.firstName,
@@ -101,6 +103,7 @@ const {
                 className={`mt-1 block w-full border rounded-md p-2 ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
                 disabled={loading}
               />
+              {emailError && <p className="text-red-500 text-sm mt-1">{emailError}</p>}
             </div>
 
             <div>

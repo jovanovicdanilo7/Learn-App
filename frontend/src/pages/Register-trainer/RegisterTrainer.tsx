@@ -32,6 +32,7 @@ function RegisterTrainer() {
   const [loading, setLoading] = useState(false);
   const [showCredentials, setShowCredentials] = useState(false);
   const [credentials, setCredentials] = useState<{ username: string; password: string } | null>(null);
+  const [emailError, setEmailError] = useState('');
 
   useEffect(() => {
     fetch("http://localhost:8000/specializations")
@@ -43,20 +44,25 @@ function RegisterTrainer() {
   const onSubmit = async (data: FormData) => {
     try {
       setLoading(true);
-
+      setEmailError('');
+      
       const response = await axios.post("http://localhost:8000/trainers", {
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email,
-        specializationId: data.specialization,
+        specialization: data.specialization,
       });
-
+      
       const { username, password } = response.data.credentials;
       setCredentials({ username, password });
       setShowCredentials(true);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating trainer:", error);
-      alert("Something went wrong while creating the trainer.");
+      if (error.response?.data?.message?.includes("email")) {
+        setEmailError("A user with this email already exists.");
+      } else {
+        alert("Something went wrong while creating the trainer.");
+      }
     } finally {
       setLoading(false);
     }
@@ -112,6 +118,7 @@ function RegisterTrainer() {
                 className={`mt-1 block w-full border rounded-md p-2 ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
                 disabled={loading}
               />
+              {emailError && <p className="text-red-500 text-sm mt-1">{emailError}</p>}
             </div>
 
             <div>
