@@ -8,6 +8,7 @@ import { TrainingTypeModule } from './training-type/training-type.module';
 import { SpecializationsModule } from './specialization/specialization.module';
 import { TrainerModule } from './trainer/trainer.module';
 import { StudentModule } from './student/student.module';
+import { TrainerToStudentModule } from './trainer-to-student/trainer-to-student.module';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { StudentModule } from './student/student.module';
     TrainingTypeModule,
     SpecializationsModule,
     TrainerModule,
-    StudentModule
+    StudentModule,
+    TrainerToStudentModule,
   ],
 })
 export class AppModule {}
