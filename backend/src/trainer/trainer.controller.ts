@@ -11,7 +11,7 @@ export class TrainerController {
     firstName: string;
     lastName: string;
     email: string;
-    specializationId: string;
+    specialization: string;
   }) {
     return this.trainerService.create(dto);
   }
