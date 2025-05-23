@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { v4 as uuidv4 } from "uuid";
 import * as bcrypt from 'bcrypt';
 import { dbDocClient } from "src/database/dynamodb.service";
@@ -72,6 +72,22 @@ export class TrainerService {
     );
     return result.Items || [];
   }
-  
 
+  async getTrainerByUserId(userId: string) {
+    const result = await dbDocClient.send(
+      new ScanCommand({
+        TableName: "Trainers",
+        FilterExpression: "userId = :userId",
+        ExpressionAttributeValues: {
+          ":userId": userId,
+        },
+      })
+    );
+  
+    if (!result.Items || result.Items.length === 0) {
+      throw new NotFoundException(`Trainer with userId ${userId} not found.`);
+    }
+  
+    return result.Items[0];
+  }
 }
