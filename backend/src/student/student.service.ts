@@ -65,4 +65,13 @@ export class StudentService {
       token,
     };
   }
+
+  async getAllStudents() {
+    const result = await dbDocClient.send(
+      new ScanCommand({
+        TableName: "Students",
+      })
+    );
+    return result.Items || [];
+  }
 }
