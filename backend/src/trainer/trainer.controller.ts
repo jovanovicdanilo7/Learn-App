@@ -1,4 +1,5 @@
-import { Body, Controller, Get, HttpCode, Post } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, Post, Res } from "@nestjs/common";
+import { Response } from "express";
 import { TrainerService } from "./trainer.service";
 
 @Controller('trainers')
@@ -7,13 +8,24 @@ export class TrainerController {
 
   @Post()
   @HttpCode(201)
-  createTrainer(@Body() dto: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    specialization: string;
-  }) {
-    return this.trainerService.create(dto);
+  async createTrainer( @Body() dto: {
+      firstName: string;
+      lastName: string;
+      email: string;
+      specialization: string;
+    },
+    @Res({ passthrough: true }) response: Response
+  ) {
+    const { token, credentials } = await this.trainerService.create(dto);
+
+    response.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 1000 * 60 * 60 * 24,
+    });
+
+    return { credentials };
   }
 
   @Get()

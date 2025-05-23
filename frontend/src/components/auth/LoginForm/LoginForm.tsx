@@ -39,14 +39,20 @@ function LoginForm() {
       setCaptchaError('');
       setLoading(true);
 
-      const response = await axios.post('http://localhost:8000/auth/login', {
-        ...data,
-        captchaToken,
-      });
+      const response = await axios.post(
+        'http://localhost:8000/auth/login',
+        {
+          ...data,
+          captchaToken,
+        },
+        {
+          withCredentials: true,
+        }
+      );
 
       if (response.status === 200) {
         localStorage.setItem('token', response.data.token);
-        navigate('/');
+        navigate('/login-trainer');
       }
     } catch (err) {
       setAuthError('Wrong username or password');

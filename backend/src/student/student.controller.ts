@@ -1,4 +1,5 @@
-import { Body, Controller, HttpCode, Post } from "@nestjs/common";
+import { Body, Controller, HttpCode, Post, Res } from "@nestjs/common";
+import { Response } from "express";
 import { StudentService } from "./student.service";
 
 @Controller('students')
@@ -7,13 +8,24 @@ export class StudentController {
 
   @Post()
   @HttpCode(201)
-  createStudent(@Body() dto: {
+  async createStudent(@Body() dto: {
     firstName: string;
     lastName: string;
     email: string;
     dateOfBirth?: string;
     address?: string;
-  }) {
-    return this.studentService.create(dto);
+  },
+  @Res({ passthrough: true }) response: Response
+  ) {
+    const { token, credentials } = await this.studentService.create(dto);
+
+    response.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 1000 * 60 * 60 * 24,
+    });
+
+    return { credentials };
   }
 }

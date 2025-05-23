@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 
-import Header from "../../components/common/Header/Header";
-import Footer from "../../components/common/Footer/Footer";
-import Button from "../../components/common/Button/Button";
-import studentImg from "../../images/student.png";
+import Header from "../../../components/common/Header/Header";
+import Footer from "../../../components/common/Footer/Footer";
+import Button from "../../../components/common/Button/Button";
+import studentImg from "../../../images/student.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 

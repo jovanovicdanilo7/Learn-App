@@ -3,9 +3,12 @@ import { v4 as uuidv4 } from "uuid";
 import * as bcrypt from "bcrypt";
 import { dbDocClient } from "src/database/dynamodb.service";
 import { PutCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
+import { JwtService } from "@nestjs/jwt";
 
 @Injectable()
 export class StudentService {
+  constructor(private jwtService: JwtService) {}
+
   async create(dto: {
     firstName: string;
     lastName: string;
@@ -55,11 +58,11 @@ export class StudentService {
     await dbDocClient.send(new PutCommand({ TableName: "Users", Item: user }));
     await dbDocClient.send(new PutCommand({ TableName: "Students", Item: student }));
 
+    const token = this.jwtService.sign({ id: userId, username });
+
     return {
-      credentials: {
-        username,
-        password: plainPassword
-      }
+      credentials: { username, password: plainPassword },
+      token,
     };
   }
 }

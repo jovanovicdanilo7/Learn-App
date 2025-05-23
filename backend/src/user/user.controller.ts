@@ -23,24 +23,29 @@ export class AuthController {
         const { user, token } = await this.authService.login(body);
 
         response.cookie('token', token, {
-            httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 1000 * 60 * 60 * 24,
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          maxAge: 1000 * 60 * 60 * 24,
         });
 
         return { user };
     }
 
-    @Get('logout')
-    @UseGuards(AuthGuard('jwt'))
+    @Post('logout')
     @HttpCode(200)
     logout(@Res({ passthrough: true }) res: Response) {
-        res.clearCookie('token');
-        return {
-            message: 'Logout successful',
-        };
+    res.clearCookie('token', {
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: process.env.NODE_ENV === 'production',
+    });
+    
+    return {
+        message: 'Logout successful',
+    };
     }
+
 }
 
 @Controller('user')
