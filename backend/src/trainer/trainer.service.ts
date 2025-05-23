@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from "uuid";
 import * as bcrypt from 'bcrypt';
 import { dbDocClient } from "src/database/dynamodb.service";
 import { PutCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
-import { unmarshall } from '@aws-sdk/util-dynamodb';
 
 @Injectable()
 export class TrainerService {
