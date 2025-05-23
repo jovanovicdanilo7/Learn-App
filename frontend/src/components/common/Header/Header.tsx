@@ -11,7 +11,7 @@ function Header() {
   const isLoginPage = location.pathname === '/login';
 
   return (
-    <header className="flex items-center justify-between px-4 py-2 bg-white shadow-md rounded-md">
+    <header className="flex items-center justify-between px-4 py-2 bg-white shadow-md rounded-md font-montserrat">
       <div className="flex items-center">
         <div className="mr-5">
           <img src={logo} alt="Logo" />
