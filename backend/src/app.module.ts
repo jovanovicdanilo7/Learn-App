@@ -7,6 +7,7 @@ import { TrainingModule } from './training/training.module';
 import { TrainingTypeModule } from './training-type/training-type.module';
 import { SpecializationsModule } from './specialization/specialization.module';
 import { TrainerModule } from './trainer/trainer.module';
+import { StudentModule } from './student/student.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { TrainerModule } from './trainer/trainer.module';
     TrainingTypeModule,
     SpecializationsModule,
     TrainerModule,
+    StudentModule
   ],
 })
 export class AppModule {}
