@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, Post, Res } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, Param, Post, Res } from "@nestjs/common";
 import { Response } from "express";
 import { TrainerService } from "./trainer.service";
 
@@ -33,4 +33,11 @@ export class TrainerController {
   getTrainers() {
     return this.trainerService.getAllTrainers();
   }
+
+  @Get(':userId')
+  @HttpCode(200)
+  getTrainerByUserId(@Param('userId') userId: string) {
+    return this.trainerService.getTrainerByUserId(userId);
+  }
+
 }
