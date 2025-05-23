@@ -2,29 +2,23 @@ import { Link } from 'react-router-dom';
 
 interface NavigationProps {
   currentPath: string;
+  mobile?: boolean;
 }
 
-function Navigation({ currentPath }: NavigationProps) {
+function Navigation({ currentPath, mobile = false }: NavigationProps) {
+  const linkClass = (path: string) =>
+    `${mobile ? 'block mb-3 text-lg' : 'inline-block mr-6'} font-medium ${
+      currentPath === path ? 'text-purple-600' : 'text-gray-500 hover:text-purple-600'
+    }`;
+
   return (
-    <nav className="flex space-x-6">
-      <Link
-        to="/blog"
-        className={`font-medium ${currentPath === "/blog" ? "text-purple-600" : "text-gray-500 hover:text-purple-600"}`}
-      >
-        Blog
-      </Link>
-      <Link
-        to="/pricing"
-        className={`font-medium ${currentPath === "/pricing" ? "text-purple-600" : "text-gray-500 hover:text-purple-600"}`}
-      >
-        Pricing
-      </Link>
-      <Link
-        to="/about"
-        className={`font-medium ${currentPath === "/about" ? "text-purple-600" : "text-gray-500 hover:text-purple-600"}`}
-      >
-        About Us
-      </Link>
+    <nav className={mobile ? "mt-4" : "flex"}>
+      <Link to="/blog" className={linkClass("/blog")}>Blog</Link>
+      <Link to="/pricing" className={linkClass("/pricing")}>Pricing</Link>
+      <Link to="/about" className={linkClass("/about")}>About Us</Link>
+      {mobile && (
+        <Link to="/account" className={linkClass("/account")}>My Account</Link>
+      )}
     </nav>
   );
 }
