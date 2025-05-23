@@ -1,4 +1,4 @@
-import { Body, Post, Controller, Get, UseGuards, HttpCode, Delete, Put, Res } from "@nestjs/common";
+import { Body, Post, Controller, Get, UseGuards, HttpCode, Delete, Put, Res, Param } from "@nestjs/common";
 import { AuthService, UserService } from "./user.service";
 import { CreateUserDto } from "./create-user.dto";
 import { AuthGuard } from '@nestjs/passport';
@@ -79,5 +79,10 @@ export class UserController {
         @Body() body: { newPassword: string }
     ) {
         return await this.userService.updatePassword(user.id, body.newPassword);
+    }
+
+    @Put(':id')
+    async updateUser(@Param('id') userId: string, @Body() updateData: any) {
+        return this.userService.updateUser(userId, updateData);
     }
 }
