@@ -1,5 +1,5 @@
 import { DeleteCommand, GetCommand, PutCommand, ScanCommand, UpdateCommand, UpdateCommandOutput } from "@aws-sdk/lib-dynamodb";
-import { BadRequestException, Injectable, UnauthorizedException } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { dbDocClient } from "src/database/dynamodb.service";
 import { v4 as uuidv4 } from 'uuid'
 import * as bcrypt from 'bcrypt';

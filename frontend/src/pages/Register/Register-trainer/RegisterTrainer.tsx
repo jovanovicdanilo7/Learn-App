@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 
-import Header from "../../components/common/Header/Header";
-import Footer from "../../components/common/Footer/Footer";
-import Button from "../../components/common/Button/Button";
-import trainerImg from "../../images/trainer.png";
+import Header from "../../../components/common/Header/Header";
+import Footer from "../../../components/common/Footer/Footer";
+import Button from "../../../components/common/Button/Button";
+import trainerImg from "../../../images/trainer.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 
 type FormData = {
   firstName: string;
@@ -33,6 +34,7 @@ function RegisterTrainer() {
   const [showCredentials, setShowCredentials] = useState(false);
   const [credentials, setCredentials] = useState<{ username: string; password: string } | null>(null);
   const [emailError, setEmailError] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch("http://localhost:8000/specializations")
@@ -46,12 +48,17 @@ function RegisterTrainer() {
       setLoading(true);
       setEmailError('');
       
-      const response = await axios.post("http://localhost:8000/trainers", {
-        firstName: data.firstName,
-        lastName: data.lastName,
-        email: data.email,
-        specialization: data.specialization,
-      });
+      const response = await axios.post("http://localhost:8000/trainers",
+        {
+          firstName: data.firstName,
+          lastName: data.lastName,
+          email: data.email,
+          specialization: data.specialization,
+        },
+        {
+          withCredentials: true,
+        }
+      );
       
       const { username, password } = response.data.credentials;
       setCredentials({ username, password });
@@ -166,7 +173,7 @@ function RegisterTrainer() {
           <p><strong>User name</strong><br />{credentials.username}</p>
           <p className="mt-2"><strong>Password</strong><br />{credentials.password}</p>
         </div>
-        <Button onClick={() => window.location.href = "/"}>My account</Button>
+        <Button onClick={() => navigate("/login-trainer")}>My account</Button>
         </div>
       </div>
       )}
