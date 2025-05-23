@@ -37,15 +37,15 @@ export class AuthService {
         };
     }
 
-    async login(body: { email: string, password: string }) {
-        const { email, password } = body;
+    async login(body: { username: string, password: string }) {
+        const { username, password } = body;
 
         const result = await dbDocClient.send(
             new ScanCommand({
               TableName: 'Users',
-              FilterExpression: 'email = :email',
+              FilterExpression: 'username = :username',
               ExpressionAttributeValues: {
-                ':email': email,
+                ':username': username,
               },
             }),
           );
@@ -59,7 +59,7 @@ export class AuthService {
               });
         }
 
-        const payload = { id: user.id, email: user.email };
+        const payload = { id: user.id, username: user.username };
         const token = this.jwtService.sign(payload);
     
         return {
