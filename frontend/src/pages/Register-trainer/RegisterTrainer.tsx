@@ -127,7 +127,7 @@ function RegisterTrainer() {
               </label>
               <select
                 {...register("specialization", { required: true })}
-                className={`mt-1 block w-full border rounded-md p-2 ${errors.specialization ? 'border-red-500' : 'border-gray-300'}`}
+                className={`bg-white mt-1 block w-full border rounded-md p-2 ${errors.specialization ? 'border-red-500' : 'border-gray-300'}`}
                 disabled={loading}
               >
                 <option value="">Please select</option>

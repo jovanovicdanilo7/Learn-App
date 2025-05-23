@@ -19,8 +19,8 @@ function Register() {
 
         <div className="space-y-10 max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row items-center bg-gray-50 rounded-lg p-6 shadow-md">
-            <div className="md:w-1/2 mb-4 md:mb-0">
-              <h2 className="text-2xl font-bold mb-2">Register as Trainer</h2>
+            <div className="md:w-1/2 mb-4 md:mb-0 px-12 py-12">
+              <h2 className="text-3xl font-bold mb-2">Register as Trainer</h2>
               <p className="text-gray-600 mb-4">
                 Do consectetur proident proident id eiusmod deserunt consequat pariatur ad ex velit do Lorem reprehenderit.
               </p>
@@ -32,8 +32,8 @@ function Register() {
           </div>
 
           <div className="flex flex-col md:flex-row items-center bg-gray-50 rounded-lg p-6 shadow-md">
-            <div className="md:w-1/2 mb-4 md:mb-0">
-              <h2 className="text-2xl font-bold mb-2">Register as Student</h2>
+            <div className="md:w-1/2 mb-4 md:mb-0 px-12 py-12">
+              <h2 className="text-3xl font-bold mb-2">Register as Student</h2>
               <p className="text-gray-600 mb-4">
                 Do consectetur proident proident id eiusmod deserunt consequat pariatur ad ex velit do Lorem reprehenderit.
               </p>
