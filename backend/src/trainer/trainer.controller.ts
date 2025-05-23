@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, Post } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, Post } from "@nestjs/common";
 import { TrainerService } from "./trainer.service";
 
 @Controller('trainers')
@@ -14,5 +14,11 @@ export class TrainerController {
     specialization: string;
   }) {
     return this.trainerService.create(dto);
+  }
+
+  @Get()
+  @HttpCode(200)
+  getTrainers() {
+    return this.trainerService.getAllTrainers();
   }
 }

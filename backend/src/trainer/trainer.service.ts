@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import * as bcrypt from 'bcrypt';
 import { dbDocClient } from "src/database/dynamodb.service";
 import { PutCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
-import { specializations } from "src/seeds/seed-specialization";
+import { unmarshall } from '@aws-sdk/util-dynamodb';
 
 @Injectable()
 export class TrainerService {
@@ -34,14 +34,6 @@ export class TrainerService {
     const plainPassword = Math.random().toString(36).slice(-8);
     const hashedPassword = await bcrypt.hash(plainPassword, 10);
 
-    const matchedSpecialization = specializations.find(
-      (spec) => spec.specialization === dto.specialization
-    );
-
-    if (!matchedSpecialization) {
-      throw new BadRequestException(`Specialization "${dto.specialization}" not found`);
-    }
-
     const newUser = {
       id: userId,
       firstName: dto.firstName,
@@ -56,7 +48,7 @@ export class TrainerService {
     const newTrainer = {
       id: trainerId,
       userId,
-      specializationId: matchedSpecialization.id,
+      specializationId: dto.specialization,
     };
 
     await dbDocClient.send(new PutCommand({ TableName: "Users", Item: newUser }));
@@ -69,4 +61,15 @@ export class TrainerService {
       }
     };
   }
+
+  async getAllTrainers() {
+    const result = await dbDocClient.send(
+      new ScanCommand({
+        TableName: "Trainers",
+      })
+    );
+    return result.Items || [];
+  }
+  
+
 }
