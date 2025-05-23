@@ -10,7 +10,7 @@ import Input from '../../common/Input/Input';
 import Button from '../../common/Button/Button';
 
 type LoginFormInputs = {
-  email: string;
+  username: string;
   password: string;
 };
 
@@ -49,7 +49,7 @@ function LoginForm() {
         navigate('/');
       }
     } catch (err) {
-      setAuthError('Wrong email or password');
+      setAuthError('Wrong username or password');
       console.error('Login failed:', err);
     } finally {
       setLoading(false);
@@ -64,23 +64,23 @@ function LoginForm() {
   return (
     <div className="relative flex flex-col items-center justify-center min-h-[70vh] px-4 font-montserrat my-10">
       <div className={loading ? 'blur-sm pointer-events-none' : ''}>
-        <h2 className="text-2xl font-bold mb-1">Sign In</h2>
-        <p className="text-gray-500 mb-6">Welcome back</p>
+        <h2 className="text-2xl font-bold mb-1 text-center">Sign In</h2>
+        <p className="text-gray-500 mb-3 text-center">Welcome back</p>
 
         <form className="w-full max-w-xs" onSubmit={handleSubmit(onSubmit)}>
-          <label className="block text-sm mb-1 font-bold text-gray-700">Email</label>
-          <div className={`flex items-center border rounded-md mb-3 px-3 py-3 ${errors.email ? 'border-red-500 bg-red-50' : 'bg-gray-100'}`}>
-            <span className={`mr-2 ${errors.email ? 'text-red-500' : 'text-gray-500'}`}>
+          <label className="block text-sm mb-1 font-bold text-gray-700">Username</label>
+          <div className={`flex items-center border rounded-md mb-3 px-3 py-3 ${errors.username ? 'border-red-500 bg-red-50' : 'bg-gray-100'}`}>
+            <span className={`mr-2 ${errors.username ? 'text-red-500' : 'text-gray-500'}`}>
               <FontAwesomeIcon icon={faUserTie} />
             </span>
             <Input
               type="text"
-              placeholder="Enter email"
-              {...register('email', { required: true })}
+              placeholder="Enter username"
+              {...register('username', { required: true })}
               disabled={loading}
             />
           </div>
-          {errors.email && <p className="text-red-500 text-sm mb-3">Email is required</p>}
+          {errors.username && <p className="text-red-500 text-sm mb-3">Username is required</p>}
 
           <label className="block text-sm mb-1 font-bold text-gray-700">Password</label>
           <div className={`flex items-center border rounded-md mb-5 px-3 py-1 ${errors.password ? 'border-red-500 bg-red-50' : 'bg-gray-100'}`}>

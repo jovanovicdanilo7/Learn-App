@@ -37,7 +37,7 @@ function About() {
               <div className="flex flex-col md:flex-row gap-8 md:w-2/3">
 
                 <div className="bg-gray-50 rounded-lg text-center p-6">
-                  <img src={john} alt="John Doe" className="mx-auto rounded-full border-4 border-white shadow-sm mb-4" />
+                  <img src={john} alt="John Doe" className="mx-auto rounded-full border-4 border-white shadow-sm mb-7" />
                   <h3 className="text-xl font-bold text-gray-900">John Doe</h3>
                   <p className="text-sm text-indigo-600">Professional title</p>
                   <p className="text-sm text-gray-500 mt-2">
@@ -46,7 +46,7 @@ function About() {
                 </div>
 
                 <div className="bg-gray-50 rounded-lg text-center p-6">
-                  <img src={sara} alt="Sara Rose" className="mx-auto rounded-full border-4 border-white shadow-sm mb-4" />
+                  <img src={sara} alt="Sara Rose" className="mx-auto rounded-full border-4 border-white shadow-sm mb-7" />
                   <h3 className="text-xl font-bold text-gray-900">Sara Rose</h3>
                   <p className="text-sm text-indigo-600">Professional title</p>
                   <p className="text-sm text-gray-500 mt-2">
@@ -55,7 +55,7 @@ function About() {
                 </div>
 
                 <div className="bg-gray-50 rounded-lg text-center p-6">
-                  <img src={jack} alt="Jack Black" className="mx-auto rounded-full border-4 border-white shadow-sm mb-4" />
+                  <img src={jack} alt="Jack Black" className="mx-auto rounded-full border-4 border-white shadow-sm mb-5" />
                   <h3 className="text-xl font-bold text-gray-900">Jack Black</h3>
                   <p className="text-sm text-indigo-600">Professional title</p>
                   <p className="text-sm text-gray-500 mt-2">
