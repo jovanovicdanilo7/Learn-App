@@ -1,7 +1,7 @@
 import { PutCommand } from "@aws-sdk/lib-dynamodb";
 import { dbDocClient } from "../database/dynamodb.service";
 
-const specializations = [
+export const specializations = [
   { id: "000001", specialization: "React" },
   { id: "000002", specialization: "Angular" },
   { id: "000003", specialization: "Express" },
