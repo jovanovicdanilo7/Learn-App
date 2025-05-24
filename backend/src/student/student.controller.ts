@@ -31,7 +31,7 @@ export class StudentController {
 
   @Get()
   @HttpCode(200)
-  getTrainers() {
+  getStudents() {
     return this.studentService.getAllStudents();
   }
 }

@@ -7,6 +7,8 @@ import Login from './pages/Login/Login';
 import RegisterTrainer from './pages/Register/Register-trainer/RegisterTrainer';
 import RegisterStudent from './pages/Register/Register-student/RegisterStudent';
 import TrainerLogin from './pages/Login/TrainerLogin/TrainerLogin';
+import MyAccount from './pages/MyAccount/MyAccount';
+import EditProfile from './pages/MyAccount/EditProfile/EditProfile';
 
 export default function AppRouter() {
   return (
@@ -20,6 +22,8 @@ export default function AppRouter() {
         <Route path="/register-trainer" element={<RegisterTrainer/>}/>
         <Route path="/login" element={<Login/>}/>
         <Route path="/login-trainer" element={<TrainerLogin/>}/>
+        <Route path="/my-account" element={<MyAccount/>}/>
+        <Route path="/my-account/edit" element={<EditProfile/>}/>
       </Routes>
     </BrowserRouter>
   );

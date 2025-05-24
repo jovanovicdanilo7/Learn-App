@@ -5,7 +5,7 @@ import { SpecializationsService } from "./specialization.service";
 export class SpecializationsController {
     constructor(private readonly specializationsService: SpecializationsService) {}
 
-    @Get('/')
+    @Get()
     async getAll() {
         return this.specializationsService.getAll();
     }

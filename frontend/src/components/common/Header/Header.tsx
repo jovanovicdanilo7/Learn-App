@@ -25,6 +25,7 @@ interface HeaderProps {
 }
 
 function Header({ user }: HeaderProps) {
+  console.log("HEADER USER: ", user);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -33,6 +34,8 @@ function Header({ user }: HeaderProps) {
 
   const isLoginPage = location.pathname === '/login';
   const isTrainerLoginPage = location.pathname === '/login-trainer';
+  const isMyAccountPage = location.pathname === '/my-account';
+  const isEditPage = location.pathname === '/my-account/edit';
 
   const handleLogout = async () => {
     try {
@@ -65,7 +68,7 @@ function Header({ user }: HeaderProps) {
         )}
       </div>
 
-      {!isLoginPage && isTrainerLoginPage && user ? (
+      {(!isLoginPage && (isTrainerLoginPage || isMyAccountPage || isEditPage) && user) ? (
         <div className="relative">
           <img
             src={user.photo || avatar}
@@ -96,7 +99,7 @@ function Header({ user }: HeaderProps) {
               <div className="flex items-center mb-4 space-x-2 text-gray-700">
                 <FontAwesomeIcon icon={faUser} />
                 <Link
-                  to="/"
+                  to="/my-account"
                   className="text-sm font-medium text-gray-500 hover:text-purple-600"
                 >
                   My Account
@@ -108,7 +111,11 @@ function Header({ user }: HeaderProps) {
                   <FontAwesomeIcon icon={faMoon} />
                   <span className="text-sm font-medium">Night mode</span>
                 </div>
-                <input type="checkbox" className="form-checkbox" />
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" checked={false} readOnly className="sr-only peer" />
+                  <div className="w-11 h-6 bg-gray-200 peer-checked:bg-purple-600 rounded-full peer peer-focus:ring-2 peer-focus:ring-purple-500 transition-all"></div>
+                  <div className="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform transform peer-checked:translate-x-5"></div>
+                </label>
               </div>
           
               <div className="h-px bg-gray-200 w-full mt-10 mb-2" />
