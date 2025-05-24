@@ -20,7 +20,7 @@ function Button({ children, onClick, type = 'button', variant = "primary", class
     <button
       type={type}
       onClick={onClick}
-      className={`${base} ${styles} ${className}`}
+      className={`${base} ${className || styles}`}
       disabled={disabled}
     >
       {children}

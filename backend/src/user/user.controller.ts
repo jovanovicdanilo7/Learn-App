@@ -90,4 +90,10 @@ export class UserController {
     async updateUser(@Param('id') userId: string, @Body() updateData: any) {
         return this.userService.updateUser(userId, updateData);
     }
+
+    @Get()
+    @HttpCode(200)
+    getUsers() {
+        return this.userService.getAllUsers();
+    }
 }

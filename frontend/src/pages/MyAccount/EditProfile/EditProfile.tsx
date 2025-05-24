@@ -1,0 +1,210 @@
+import { useEffect, useState } from "react";
+import axios from "axios";
+import Footer from "../../../components/common/Footer/Footer";
+import Header from "../../../components/common/Header/Header";
+import Button from "../../../components/common/Button/Button";
+import avatar from "../../../images/avatar.png";
+import { useNavigate } from "react-router-dom";
+
+interface User {
+  id: string;
+  firstName: string;
+  lastName: string;
+  username: string;
+  email: string;
+  isActive: boolean;
+  photo?: string;
+}
+
+function EditProfile() {
+  const [user, setUser] = useState<User | null>(null);
+  const [specializations, setSpecializations] = useState<
+    { id: string; specialization: string }[]
+  >([]);
+  const [selectedSpecialization, setSelectedSpecialization] = useState('');
+  const [photoData, setPhotoData] = useState<string>('');
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const { data: userData } = await axios.get("http://localhost:8000/user/me", {
+        withCredentials: true,
+      });
+      setUser(userData);
+
+      const { data: specs } = await axios.get("http://localhost:8000/specializations");
+      setSpecializations(specs);
+
+      const trainerRes = await axios.get(`http://localhost:8000/trainers/${userData.id}`);
+      setSelectedSpecialization(trainerRes.data.specializationId);
+    };
+
+    fetchData();
+  }, []);
+
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (typeof reader.result === 'string') {
+          setPhotoData(reader.result);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!user) return;
+
+    const updates = {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      username: user.username,
+      email: user.email,
+      isActive: user.isActive,
+      specializationId: selectedSpecialization,
+    };
+
+    await axios.put(`http://localhost:8000/user/${user.id}`, updates);
+
+    if (photoData) {
+      await axios.post(
+        "http://localhost:8000/user/upload-photo",
+        { data: photoData },
+        { withCredentials: true }
+      );
+    }
+
+    navigate("/my-account");
+  };
+
+  const handleInputChange = (field: keyof User, value: string | boolean) => {
+    if (user) setUser({ ...user, [field]: value });
+  };
+
+  return (
+    <div className="flex flex-col min-h-screen font-montserrat">
+      <Header user={user ?? undefined} />
+
+      <main className="flex-grow px-4 pt-4 pb-10 md:px-20 max-w-7xl mx-auto">
+        <h1 className="text-4xl font-bold text-center my-12">My Account</h1>
+        <div className="grid md:grid-cols-2 gap-10">
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-2xl font-bold mb-6">Edit profile</h2>
+
+            <div className="flex items-start gap-10 mb-6">
+              <div className="flex-col">
+                <h4 className="font-semibold text-gray-700">Profile photo</h4>
+                <img
+                  src={photoData || user?.photo || avatar}
+                  alt="avatar"
+                  className="w-24 h-24 rounded-lg object-cover"
+                />
+              </div>
+
+              <div>
+                <div className="text-sm font-medium mb-1 text-gray-700">Upload your photo</div>
+                <div className="text-xs text-gray-500 mb-2">
+                  Your photo should be in PNG or JPG format
+                </div>
+
+                <div className="flex gap-4">
+                    <label className="mt-1" htmlFor="imageUpload">
+                        <span className="px-4 py-2 rounded-md text-sm font-medium transition border border-purple-600 text-purple-600 hover:bg-purple-50 cursor-pointer">
+                          Choose image
+                        </span>
+                    </label>
+                    
+                    <input
+                        id="imageUpload"
+                        type="file"
+                        accept="image/png, image/jpeg"
+                        className="hidden"
+                        onChange={handlePhotoUpload}
+                    />
+
+                  <Button
+                    variant="text"
+                    className="text-gray-400"
+                    onClick={() => setPhotoData('')}
+                  >
+                    Remove
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <label className="block text-sm font-bold text-gray-700">First Name</label>
+              <input
+                className="w-full border rounded-md px-4 py-2 bg-white"
+                placeholder="First name"
+                value={user?.firstName || ''}
+                onChange={(e) => handleInputChange('firstName', e.target.value)}
+              />
+              <label className="block text-sm font-bold text-gray-700">Last Name</label>
+              <input
+                className="w-full border rounded-md px-4 py-2 bg-white"
+                placeholder="Last name"
+                value={user?.lastName || ''}
+                onChange={(e) => handleInputChange('lastName', e.target.value)}
+              />
+              <label className="block text-sm font-bold text-gray-700">Username</label>
+              <input
+                className="w-full border rounded-md px-4 py-2 bg-white"
+                placeholder="Username"
+                value={user?.username || ''}
+                onChange={(e) => handleInputChange('username', e.target.value)}
+              />
+              <label className="block text-sm font-bold text-gray-700">Email</label>
+              <input
+                className="w-full border rounded-md px-4 py-2 bg-white"
+                placeholder="Email"
+                value={user?.email || ''}
+                onChange={(e) => handleInputChange('email', e.target.value)}
+              />
+              <div className="flex items-center gap-2">
+                <span className="font-semibold text-sm">Active</span>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    className="sr-only peer"
+                    checked={user?.isActive || false}
+                    onChange={(e) => handleInputChange('isActive', e.target.checked)}
+                  />
+                  <div className="w-11 h-6 bg-gray-200 peer-checked:bg-purple-600 rounded-full peer peer-focus:ring-2 peer-focus:ring-purple-500 transition-all"></div>
+                  <div className="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform transform peer-checked:translate-x-5"></div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-6">
+            <h3 className="font-semibold mb-2">My specialization</h3>
+            <select
+              value={selectedSpecialization}
+              onChange={(e) => setSelectedSpecialization(e.target.value)}
+              className="border px-4 py-2 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-purple-500"
+            >
+              <option value="">Dropdown</option>
+              {specializations.map((spec) => (
+                <option key={spec.id} value={spec.id}>{spec.specialization}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className="mt-12 flex justify-center gap-6">
+          <Button variant="text" className="text-gray-400 text-sm hover:text-gray-600" onClick={() => navigate("/my-account")}>Cancel</Button>
+          <Button onClick={handleSubmit}>Save changes</Button>
+        </div>
+      </main>
+
+      <Footer />
+    </div>
+  );
+}
+
+export default EditProfile;

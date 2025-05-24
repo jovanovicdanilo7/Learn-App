@@ -157,7 +157,7 @@ const {
           <p><strong>User name</strong><br />{credentials.username}</p>
           <p className="mt-2"><strong>Password</strong><br />{credentials.password}</p>
         </div>
-        <Button onClick={() => window.location.href = "/"}>My account</Button>
+        <Button onClick={() => window.location.href = "/my-account"}>My account</Button>
         </div>
       </div>
       )}

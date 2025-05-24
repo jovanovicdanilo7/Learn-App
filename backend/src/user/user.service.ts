@@ -184,14 +184,29 @@ export class UserService {
     }
   
     if ('specializationId' in updateData) {
+      const trainerRes = await dbDocClient.send(
+        new ScanCommand({
+          TableName: "Trainers",
+          FilterExpression: "userId = :userId",
+          ExpressionAttributeValues: {
+            ":userId": userId
+          }
+        })
+      );
+    
+      const trainer = trainerRes.Items?.[0];
+      if (!trainer) {
+        throw new BadRequestException("Trainer not found for this user.");
+      }
+    
       const trainerUpdates = { specializationId: updateData.specializationId };
       const expr = this.buildUpdateExpression(trainerUpdates);
-  
+    
       updatePromises.push(
         dbDocClient.send(
           new UpdateCommand({
-            TableName: 'Trainers',
-            Key: { id: userId },
+            TableName: "Trainers",
+            Key: { id: trainer.id },
             ...expr
           })
         )
@@ -203,30 +218,39 @@ export class UserService {
     return { message: 'User data updated successfully' };
   }
 
-private extractFields(source: any, keys: string[]) {
-  return Object.fromEntries(
-    Object.entries(source).filter(([key]) => keys.includes(key))
-  );
-}
+  async getAllUsers() {
+    const result = await dbDocClient.send(
+      new ScanCommand({
+        TableName: "Users",
+      })
+    );
+    return result.Items || [];
+  }
 
-private buildUpdateExpression(values: Record<string, any>) {
-  const setExpressions: string[] = [];
-  const ExpressionAttributeNames: Record<string, string> = {};
-  const ExpressionAttributeValues: Record<string, any> = {};
-
-  Object.entries(values).forEach(([key, val], index) => {
-    const name = `#key${index}`;
-    const value = `:val${index}`;
-    setExpressions.push(`${name} = ${value}`);
-    ExpressionAttributeNames[name] = key;
-    ExpressionAttributeValues[value] = val;
-  });
-
-  return {
-    UpdateExpression: `SET ${setExpressions.join(', ')}`,
-    ExpressionAttributeNames,
-    ExpressionAttributeValues,
-  };
-}
+  private extractFields(source: any, keys: string[]) {
+    return Object.fromEntries(
+      Object.entries(source).filter(([key]) => keys.includes(key))
+    );
+  }
+  
+  private buildUpdateExpression(values: Record<string, any>) {
+    const setExpressions: string[] = [];
+    const ExpressionAttributeNames: Record<string, string> = {};
+    const ExpressionAttributeValues: Record<string, any> = {};
+  
+    Object.entries(values).forEach(([key, val], index) => {
+      const name = `#key${index}`;
+      const value = `:val${index}`;
+      setExpressions.push(`${name} = ${value}`);
+      ExpressionAttributeNames[name] = key;
+      ExpressionAttributeValues[value] = val;
+    });
+  
+    return {
+      UpdateExpression: `SET ${setExpressions.join(', ')}`,
+      ExpressionAttributeNames,
+      ExpressionAttributeValues,
+    };
+  }
 
 }
