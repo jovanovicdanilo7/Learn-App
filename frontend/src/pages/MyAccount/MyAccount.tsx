@@ -152,6 +152,7 @@ function MyAccount() {
               <Button
                 variant="text"
                 className="bg-green-500 text-white hover:bg-green-600 hover:text-white"
+                onClick={() => navigate("/my-account/change-password")}
               >
                 Change Password
               </Button>
@@ -196,7 +197,7 @@ function MyAccount() {
             participate in quizzes, and track your progress. All our courses are flexible and adaptable
             to your schedule and learning speed.
         </p>
-        <Button variant="primary">View trainings</Button>
+        <Button variant="primary" onClick={() => navigate("/my-account/trainings")}>View trainings</Button>
       </section>
 
       <Footer />
