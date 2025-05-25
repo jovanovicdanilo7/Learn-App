@@ -75,7 +75,7 @@ function LoginForm() {
 
         <form className="w-full max-w-xs" onSubmit={handleSubmit(onSubmit)}>
           <label className="block text-sm mb-1 font-bold text-gray-700">Username</label>
-          <div className={`flex items-center border rounded-md mb-3 px-3 py-3 ${errors.username ? 'border-red-500 bg-red-50' : 'bg-gray-100'}`}>
+          <div className={`flex items-center border rounded-md mb-3 px-3 py-1 ${errors.username ? 'border-red-500 bg-red-50' : 'bg-gray-100'}`}>
             <span className={`mr-2 ${errors.username ? 'text-red-500' : 'text-gray-500'}`}>
               <FontAwesomeIcon icon={faUserTie} />
             </span>
@@ -84,6 +84,7 @@ function LoginForm() {
               placeholder="Enter username"
               {...register('username', { required: true })}
               disabled={loading}
+              className='border border-transparent'
             />
           </div>
           {errors.username && <p className="text-red-500 text-sm mb-3">Username is required</p>}
@@ -98,6 +99,7 @@ function LoginForm() {
               placeholder="Enter password"
               {...register('password', { required: true })}
               disabled={loading}
+              className='border border-transparent'
             />
             <Button
               onClick={() => setShowPassword(!showPassword)}
@@ -120,7 +122,7 @@ function LoginForm() {
             {captchaError && <p className="text-red-500 text-sm mt-2">{captchaError}</p>}
           </div>
 
-          <Button type="submit" variant="primary" className="w-full mb-5" disabled={loading}>
+          <Button type="submit" variant="primary" className="w-full mb-5 bg-purple-600 text-white hover:bg-purple-700" disabled={loading}>
             Sign In
           </Button>
 

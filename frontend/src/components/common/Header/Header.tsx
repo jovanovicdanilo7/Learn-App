@@ -25,7 +25,6 @@ interface HeaderProps {
 }
 
 function Header({ user }: HeaderProps) {
-  console.log("HEADER USER: ", user);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -36,6 +35,8 @@ function Header({ user }: HeaderProps) {
   const isTrainerLoginPage = location.pathname === '/login-trainer';
   const isMyAccountPage = location.pathname === '/my-account';
   const isEditPage = location.pathname === '/my-account/edit';
+  const isChangePassPage = location.pathname === '/my-account/change-password';
+  const isTrainingsPage = location.pathname === '/my-account/trainings';
 
   const handleLogout = async () => {
     try {
@@ -68,7 +69,7 @@ function Header({ user }: HeaderProps) {
         )}
       </div>
 
-      {(!isLoginPage && (isTrainerLoginPage || isMyAccountPage || isEditPage) && user) ? (
+      {(!isLoginPage && (isTrainerLoginPage || isMyAccountPage || isEditPage || isChangePassPage || isTrainingsPage) && user) ? (
         <div className="relative">
           <img
             src={user.photo || avatar}

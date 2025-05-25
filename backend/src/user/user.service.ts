@@ -1,5 +1,5 @@
 import { DeleteCommand, GetCommand, PutCommand, ScanCommand, UpdateCommand, UpdateCommandOutput } from "@aws-sdk/lib-dynamodb";
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { dbDocClient } from "src/database/dynamodb.service";
 import { v4 as uuidv4 } from 'uuid'
 import * as bcrypt from 'bcrypt';
@@ -129,22 +129,21 @@ export class UserService {
   }
 
   async updatePassword(userId: string, currentPassword: string, newPassword: string) {
-    const result = await dbDocClient.send(
+    const userRes = await dbDocClient.send(
       new GetCommand({
-        TableName: 'Users',
-        Key: { id: userId },
+        TableName: "Users",
+        Key: { id: userId }
       })
     );
   
-    const user = result.Item;
-  
+    const user = userRes.Item;
     if (!user) {
-      throw new BadRequestException('User not found');
+      throw new NotFoundException("User not found.");
     }
   
-    const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
-    if (!isPasswordValid) {
-      throw new BadRequestException('Current password is incorrect');
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      throw new BadRequestException("Current password is incorrect.");
     }
   
     const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -155,12 +154,12 @@ export class UserService {
         Key: { id: userId },
         UpdateExpression: 'SET #pwd = :password',
         ExpressionAttributeNames: {
-          '#pwd': 'password',
+          '#pwd': 'password'
         },
         ExpressionAttributeValues: {
-          ':password': hashedPassword,
-        },
-      })
+          ':password': hashedPassword
+        }
+      }),
     );
   
     return { message: 'Password updated successfully' };
