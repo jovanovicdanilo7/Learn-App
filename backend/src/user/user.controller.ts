@@ -80,10 +80,10 @@ export class UserController {
     @UseGuards(AuthGuard('jwt'))
     @HttpCode(200)
     async changePassword(
-        @GetUser() user: { id: string, email: string },
-        @Body() body: { newPassword: string }
+      @GetUser() user: { id: string; email: string },
+      @Body() body: { currentPassword: string; newPassword: string }
     ) {
-        return await this.userService.updatePassword(user.id, body.newPassword);
+      return await this.userService.updatePassword(user.id, body.currentPassword, body.newPassword);
     }
 
     @Put(':id')

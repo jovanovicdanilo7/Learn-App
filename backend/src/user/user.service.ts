@@ -128,7 +128,25 @@ export class UserService {
     };
   }
 
-  async updatePassword(userId: string, newPassword: string) {
+  async updatePassword(userId: string, currentPassword: string, newPassword: string) {
+    const result = await dbDocClient.send(
+      new GetCommand({
+        TableName: 'Users',
+        Key: { id: userId },
+      })
+    );
+  
+    const user = result.Item;
+  
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+  
+    const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+    if (!isPasswordValid) {
+      throw new BadRequestException('Current password is incorrect');
+    }
+  
     const hashedPassword = await bcrypt.hash(newPassword, 10);
   
     await dbDocClient.send(
@@ -137,14 +155,14 @@ export class UserService {
         Key: { id: userId },
         UpdateExpression: 'SET #pwd = :password',
         ExpressionAttributeNames: {
-          '#pwd': 'password'
+          '#pwd': 'password',
         },
         ExpressionAttributeValues: {
-          ':password': hashedPassword
-        }
-      }),
+          ':password': hashedPassword,
+        },
+      })
     );
-
+  
     return { message: 'Password updated successfully' };
   }
 
