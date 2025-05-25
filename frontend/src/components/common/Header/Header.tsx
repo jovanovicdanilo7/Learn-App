@@ -33,6 +33,7 @@ function Header({ user }: HeaderProps) {
 
   const isLoginPage = location.pathname === '/login';
   const isTrainerLoginPage = location.pathname === '/login-trainer';
+  const isStudentLoginPage = location.pathname === '/login-student';
   const isMyAccountPage = location.pathname === '/my-account';
   const isEditPage = location.pathname === '/my-account/edit';
   const isChangePassPage = location.pathname === '/my-account/change-password';
@@ -69,7 +70,7 @@ function Header({ user }: HeaderProps) {
         )}
       </div>
 
-      {(!isLoginPage && (isTrainerLoginPage || isMyAccountPage || isEditPage || isChangePassPage || isTrainingsPage) && user) ? (
+      {(!isLoginPage && (isTrainerLoginPage || isMyAccountPage || isEditPage || isChangePassPage || isTrainingsPage || isStudentLoginPage) && user) ? (
         <div className="relative">
           <img
             src={user.photo || avatar}
