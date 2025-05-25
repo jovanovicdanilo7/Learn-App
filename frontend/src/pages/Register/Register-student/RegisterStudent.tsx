@@ -8,6 +8,7 @@ import Button from "../../../components/common/Button/Button";
 import studentImg from "../../../images/student.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 
 type FormData = {
   firstName: string;
@@ -28,6 +29,7 @@ const {
   const [showCredentials, setShowCredentials] = useState(false);
   const [credentials, setCredentials] = useState<{ username: string; password: string } | null>(null);
   const [emailError, setEmailError] = useState('');
+  const navigate = useNavigate();
 
   const onSubmit = async (data: FormData) => {
     try {
@@ -125,12 +127,12 @@ const {
               <input
                 {...register("address", { required: false })}
                 placeholder="Input text"
-                className={`mt-1 block w-full border rounded-md p-2 ${errors.address ? 'border-red-500' : 'border-gray-300'}`}
+                className={`mt-1 mb-10 block w-full border rounded-md p-2 ${errors.address ? 'border-red-500' : 'border-gray-300'}`}
                 disabled={loading}
               />
             </div>
 
-            <Button type="submit" className="w-full" disabled={loading}>Submit</Button>
+            <Button type="submit" disabled={loading} variant="primary" onClick={() => navigate("/login-student")}>Submit</Button>
           </form>
         </div>
 
