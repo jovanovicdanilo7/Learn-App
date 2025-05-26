@@ -197,7 +197,7 @@ function MyAccount() {
               {isStudentAccount && (
                 <Button
                   variant="primary"
-                  onClick={() => navigate("/add-trainer")}
+                  onClick={() => navigate("/my-account-student/add-trainer")}
                   className="bg-purple-600 text-white hover:bg-purple-700"
                 >
                   Add trainer
