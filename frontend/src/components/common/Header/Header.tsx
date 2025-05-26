@@ -37,6 +37,7 @@ function Header({ user }: HeaderProps) {
   const isMyAccountPage = location.pathname === '/my-account-trainer';
   const isMyAccountStudentPage = location.pathname === '/my-account-student';
   const isEditPage = location.pathname === '/my-account-trainer/edit';
+  const isStudentEditPage = location.pathname === '/my-account-student/edit';
   const isChangePassPage = location.pathname === '/my-account-trainer/change-password';
   const isTrainingsPage = location.pathname === '/my-account-trainer/trainings';
   const isAddTrainerPage = location.pathname === '/my-account-student/add-trainer';
@@ -80,7 +81,8 @@ function Header({ user }: HeaderProps) {
         isTrainingsPage ||
         isStudentLoginPage ||
         isMyAccountStudentPage ||
-        isAddTrainerPage
+        isAddTrainerPage ||
+        isStudentEditPage
       ) && user) ? (
         <div className="relative">
           <img

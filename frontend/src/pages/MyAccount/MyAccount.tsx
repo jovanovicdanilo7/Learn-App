@@ -178,7 +178,11 @@ function MyAccount() {
             </div>
 
             <div className="flex gap-4 mt-10">
-              <Button variant="primary" onClick={() => navigate("/my-account/edit")}>Edit profile</Button>
+              <Button variant="primary" onClick={() => {isStudentAccount ? 
+                                                      navigate("/my-account-student/edit") :
+                                                      navigate("/my-account-trainer/edit")}}>
+                Edit profile
+              </Button>
               <Button
                 variant="text"
                 className="bg-green-500 text-white hover:bg-green-600 hover:text-white"
