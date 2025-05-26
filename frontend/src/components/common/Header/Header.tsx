@@ -34,10 +34,11 @@ function Header({ user }: HeaderProps) {
   const isLoginPage = location.pathname === '/login';
   const isTrainerLoginPage = location.pathname === '/login-trainer';
   const isStudentLoginPage = location.pathname === '/login-student';
-  const isMyAccountPage = location.pathname === '/my-account';
-  const isEditPage = location.pathname === '/my-account/edit';
-  const isChangePassPage = location.pathname === '/my-account/change-password';
-  const isTrainingsPage = location.pathname === '/my-account/trainings';
+  const isMyAccountPage = location.pathname === '/my-account-trainer';
+  const isMyAccountStudentPage = location.pathname === '/my-account-student';
+  const isEditPage = location.pathname === '/my-account-trainer/edit';
+  const isChangePassPage = location.pathname === '/my-account-trainer/change-password';
+  const isTrainingsPage = location.pathname === '/my-account-trainer/trainings';
 
   const handleLogout = async () => {
     try {
@@ -70,7 +71,7 @@ function Header({ user }: HeaderProps) {
         )}
       </div>
 
-      {(!isLoginPage && (isTrainerLoginPage || isMyAccountPage || isEditPage || isChangePassPage || isTrainingsPage || isStudentLoginPage) && user) ? (
+      {(!isLoginPage && (isTrainerLoginPage || isMyAccountPage || isEditPage || isChangePassPage || isTrainingsPage || isStudentLoginPage || isMyAccountStudentPage) && user) ? (
         <div className="relative">
           <img
             src={user.photo || avatar}
@@ -101,7 +102,7 @@ function Header({ user }: HeaderProps) {
               <div className="flex items-center mb-4 space-x-2 text-gray-700">
                 <FontAwesomeIcon icon={faUser} />
                 <Link
-                  to="/my-account"
+                  to={isStudentLoginPage ? "/my-account-student" : "/my-account-trainer"}
                   className="text-sm font-medium text-gray-500 hover:text-purple-600"
                 >
                   My Account

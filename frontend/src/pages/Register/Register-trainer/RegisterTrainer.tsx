@@ -146,7 +146,7 @@ function RegisterTrainer() {
               </select>
             </div>
 
-            <Button type="submit" className="w-full" disabled={loading}>Submit</Button>
+            <Button type="submit" variant="primary" disabled={loading}>Submit</Button>
           </form>
         </div>
 

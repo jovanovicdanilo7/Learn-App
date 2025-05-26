@@ -29,7 +29,6 @@ const {
   const [showCredentials, setShowCredentials] = useState(false);
   const [credentials, setCredentials] = useState<{ username: string; password: string } | null>(null);
   const [emailError, setEmailError] = useState('');
-  const navigate = useNavigate();
 
   const onSubmit = async (data: FormData) => {
     try {
@@ -42,14 +41,17 @@ const {
         email: data.email,
         dateOfBirth: data.dateOfBirth,
         address: data.address
+      },
+      {
+        withCredentials: true,
       });
 
       const { username, password } = response.data.credentials;
       setCredentials({ username, password });
       setShowCredentials(true);
     } catch (error) {
-      console.error("Error creating trainer:", error);
-      alert("Something went wrong while creating the trainer.");
+      console.error("Error creating student:", error);
+      alert("Something went wrong while creating the student.");
     } finally {
       setLoading(false);
     }
@@ -132,7 +134,7 @@ const {
               />
             </div>
 
-            <Button type="submit" disabled={loading} variant="primary" onClick={() => navigate("/login-student")}>Submit</Button>
+            <Button type="submit" disabled={loading} variant="primary">Submit</Button>
           </form>
         </div>
 
@@ -159,7 +161,7 @@ const {
           <p><strong>User name</strong><br />{credentials.username}</p>
           <p className="mt-2"><strong>Password</strong><br />{credentials.password}</p>
         </div>
-        <Button onClick={() => window.location.href = "/my-account"}>My account</Button>
+        <Button onClick={() => window.location.href = "/my-account-student"}>My account</Button>
         </div>
       </div>
       )}

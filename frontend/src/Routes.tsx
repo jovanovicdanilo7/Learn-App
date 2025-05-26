@@ -25,10 +25,14 @@ export default function AppRouter() {
         <Route path="/register-trainer" element={<RegisterTrainer/>}/>
         <Route path="/login" element={<Login/>}/>
         <Route path="/login-trainer" element={<TrainerLogin/>}/>
-        <Route path="/my-account" element={<MyAccount/>}/>
-        <Route path="/my-account/edit" element={<EditProfile/>}/>
-        <Route path="/my-account/change-password" element={<ChangePassword/>}/>
-        <Route path="/my-account/trainings" element={<Trainings/>}/>
+        <Route path="/my-account-trainer" element={<MyAccount/>}/>
+        <Route path="/my-account-trainer/edit" element={<EditProfile/>}/>
+        <Route path="/my-account-trainer/change-password" element={<ChangePassword/>}/>
+        <Route path="/my-account-trainer/trainings" element={<Trainings/>}/>
+        <Route path="/my-account-student" element={<MyAccount/>}/>
+        <Route path="/my-account-student/edit" element={<EditProfile/>}/>
+        <Route path="/my-account-student/change-password" element={<ChangePassword/>}/>
+        <Route path="/my-account-student/trainings" element={<Trainings/>}/>
         <Route path="/login-student" element={<StudentLogin/>}/>
       </Routes>
     </BrowserRouter>

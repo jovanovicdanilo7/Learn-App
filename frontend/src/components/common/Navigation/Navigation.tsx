@@ -17,7 +17,7 @@ function Navigation({ currentPath, mobile = false }: NavigationProps) {
       <Link to="/pricing" className={linkClass("/pricing")}>Pricing</Link>
       <Link to="/about" className={linkClass("/about")}>About Us</Link>
       {mobile && (
-        <Link to="/my-account" className={linkClass("/my-account")}>My Account</Link>
+        <Link to="/my-account-trainer" className={linkClass("/my-account-trainer")}>My Account</Link>
       )}
     </nav>
   );
