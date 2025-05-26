@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, Param, Post, Res } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, Param, Post, Put, Res } from "@nestjs/common";
 import { Response } from "express";
 import { StudentService } from "./student.service";
 
@@ -39,5 +39,14 @@ export class StudentController {
   @HttpCode(200)
   getTrainerByUserId(@Param('userId') userId: string) {
     return this.studentService.getStudentByUserId(userId);
+  }
+
+  @Put(':id')
+  @HttpCode(200)
+  async updateStudent(
+    @Param('id') id: string,
+    @Body() dto: { dateOfBirth?: string; address?: string }
+  ) {
+    return this.studentService.updateStudent(id, dto);
   }
 }

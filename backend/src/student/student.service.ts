@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from "@nestjs/comm
 import { v4 as uuidv4 } from "uuid";
 import * as bcrypt from "bcrypt";
 import { dbDocClient } from "src/database/dynamodb.service";
-import { PutCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
+import { PutCommand, ScanCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 import { JwtService } from "@nestjs/jwt";
 
 @Injectable()
@@ -91,5 +91,28 @@ export class StudentService {
     }
   
     return result.Items[0];
+  }
+
+  async updateStudent(id: string, dto: { dateOfBirth?: string; address?: string }) {
+    const updateFields = Object.entries(dto)
+      .filter(([_, value]) => value !== undefined)
+      .map(([key]) => `${key} = :${key}`)
+      .join(", ");
+
+    const expressionAttributeValues = Object.entries(dto).reduce((acc, [key, value]) => {
+      acc[`:${key}`] = value;
+      return acc;
+    }, {} as Record<string, any>);
+
+    const command = new UpdateCommand({
+      TableName: "Students",
+      Key: { id },
+      UpdateExpression: `SET ${updateFields}`,
+      ExpressionAttributeValues: expressionAttributeValues,
+      ReturnValues: "ALL_NEW",
+    });
+
+    const result = await dbDocClient.send(command);
+    return result.Attributes;
   }
 }
