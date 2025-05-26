@@ -1,4 +1,4 @@
-import { DeleteCommand, GetCommand, PutCommand, ScanCommand, UpdateCommand, UpdateCommandOutput } from "@aws-sdk/lib-dynamodb";
+import { DeleteCommand, GetCommand, PutCommand, QueryCommand, ScanCommand, UpdateCommand, UpdateCommandOutput } from "@aws-sdk/lib-dynamodb";
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { dbDocClient } from "src/database/dynamodb.service";
 import { v4 as uuidv4 } from 'uuid'
@@ -82,15 +82,57 @@ export class UserService {
   }
 
   async deleteUserById(userId: string) {
-    const result = await dbDocClient.send(
+    const userResult = await dbDocClient.send(
       new DeleteCommand({
         TableName: 'Users',
         Key: { id: userId },
-        ReturnValues: 'ALL_OLD'
-      }),
+        ReturnValues: 'ALL_OLD',
+      })
     );
-
-    return result.Attributes;
+  
+    const studentQuery = await dbDocClient.send(
+      new QueryCommand({
+        TableName: 'Students',
+        IndexName: 'userId-index',
+        KeyConditionExpression: 'userId = :uid',
+        ExpressionAttributeValues: {
+          ':uid': userId,
+        },
+      })
+    );
+  
+    const student = studentQuery.Items?.[0];
+    if (student) {
+      await dbDocClient.send(
+        new DeleteCommand({
+          TableName: 'Students',
+          Key: { id: student.id },
+        })
+      );
+    }
+  
+    const trainerQuery = await dbDocClient.send(
+      new QueryCommand({
+        TableName: 'Trainers',
+        IndexName: 'userId-index',
+        KeyConditionExpression: 'userId = :uid',
+        ExpressionAttributeValues: {
+          ':uid': userId,
+        },
+      })
+    );
+  
+    const trainer = trainerQuery.Items?.[0];
+    if (trainer) {
+      await dbDocClient.send(
+        new DeleteCommand({
+          TableName: 'Trainers',
+          Key: { id: trainer.id },
+        })
+      );
+    }
+  
+    return userResult.Attributes;
   }
 
   async uploadUsersPhoto(userId: string, base64Data: string) {

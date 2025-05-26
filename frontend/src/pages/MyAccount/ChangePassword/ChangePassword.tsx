@@ -63,7 +63,7 @@ function ChangePassword() {
         },
         { withCredentials: true }
       );
-      navigate("/my-account");
+      navigate("/my-account-trainer");
     } catch (err: any) {
       if (err.response?.data?.message) {
         setServerError(err.response.data.message);
@@ -145,7 +145,7 @@ function ChangePassword() {
               <Button
                 variant="text"
                 className="text-gray-500 text-sm hover:text-gray-600"
-                onClick={() => navigate("/my-account")}
+                onClick={() => navigate("/my-account-trainer")}
               >
                 Cancel
               </Button>

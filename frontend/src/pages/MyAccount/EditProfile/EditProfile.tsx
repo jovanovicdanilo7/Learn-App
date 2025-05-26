@@ -77,7 +77,7 @@ function EditProfile() {
       );
     }
 
-    navigate("/my-account");
+    navigate("/my-account-trainer");
   };
 
   const handleInputChange = (field: keyof User, value: string | boolean) => {
@@ -197,7 +197,7 @@ function EditProfile() {
         </div>
 
         <div className="mt-12 flex justify-center gap-6">
-          <Button variant="text" className="text-gray-400 text-sm hover:text-gray-600" onClick={() => navigate("/my-account")}>Cancel</Button>
+          <Button variant="text" className="text-gray-400 text-sm hover:text-gray-600" onClick={() => navigate("/my-account-trainer")}>Cancel</Button>
           <Button onClick={handleSubmit}>Save changes</Button>
         </div>
       </main>
