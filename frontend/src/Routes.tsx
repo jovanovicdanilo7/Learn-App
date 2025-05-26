@@ -12,6 +12,7 @@ import EditProfile from './pages/MyAccount/EditProfile/EditProfile';
 import ChangePassword from './pages/MyAccount/ChangePassword/ChangePassword';
 import Trainings from './pages/MyAccount/Trainings/Trainings';
 import StudentLogin from './pages/Login/StudentLogin/StudentLogin';
+import AddTrainer from './pages/MyAccount/AddTrainer/AddTrainer';
 
 export default function AppRouter() {
   return (
@@ -34,6 +35,7 @@ export default function AppRouter() {
         <Route path="/my-account-student/change-password" element={<ChangePassword/>}/>
         <Route path="/my-account-student/trainings" element={<Trainings/>}/>
         <Route path="/login-student" element={<StudentLogin/>}/>
+        <Route path="/my-account-student/add-trainer" element={<AddTrainer/>}/>
       </Routes>
     </BrowserRouter>
   );
