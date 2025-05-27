@@ -13,6 +13,7 @@ import ChangePassword from './pages/MyAccount/ChangePassword/ChangePassword';
 import Trainings from './pages/MyAccount/Trainings/Trainings';
 import StudentLogin from './pages/Login/StudentLogin/StudentLogin';
 import AddTrainer from './pages/MyAccount/AddTrainer/AddTrainer';
+import AddTraining from './pages/MyAccount/AddTraining/AddTraining';
 
 export default function AppRouter() {
   return (
@@ -29,6 +30,7 @@ export default function AppRouter() {
         <Route path="/my-account-trainer" element={<MyAccount/>}/>
         <Route path="/my-account-trainer/edit" element={<EditProfile/>}/>
         <Route path="/my-account-trainer/change-password" element={<ChangePassword/>}/>
+        <Route path="/my-account-student/change-password" element={<ChangePassword/>}/>
         <Route path="/my-account-trainer/trainings" element={<Trainings/>}/>
         <Route path="/my-account-student" element={<MyAccount/>}/>
         <Route path="/my-account-student/edit" element={<EditProfile/>}/>
@@ -36,6 +38,8 @@ export default function AppRouter() {
         <Route path="/my-account-student/trainings" element={<Trainings/>}/>
         <Route path="/login-student" element={<StudentLogin/>}/>
         <Route path="/my-account-student/add-trainer" element={<AddTrainer/>}/>
+        <Route path="/my-account-student/add-training" element={<AddTraining/>}/>
+
       </Routes>
     </BrowserRouter>
   );

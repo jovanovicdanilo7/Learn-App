@@ -186,8 +186,9 @@ function MyAccount() {
               <Button
                 variant="text"
                 className="bg-green-500 text-white hover:bg-green-600 hover:text-white"
-                onClick={() => navigate("/my-account/change-password")}
-              >
+                onClick={() => {isStudentAccount ? 
+                                                      navigate("/my-account-student/change-password") :
+                                                      navigate("/my-account-trainer/change-password")}}>
                 Change Password
               </Button>
             </div>
@@ -303,7 +304,17 @@ function MyAccount() {
           </div>
         </div>
       )}
-
+      <section className="text-center px-4 pb-20">
+        <h2 className="text-3xl font-bold mb-4">My Trainings</h2>
+        <p className="text-gray-600 max-w-xl mx-auto mb-10">
+            The Training Section is interactive, allowing you to engage with trainers and fellow learners,
+            participate in quizzes, and track your progress. All our courses are flexible and adaptable
+            to your schedule and learning speed.
+        </p>
+        <Button variant="primary" onClick={() => {isStudentAccount ? 
+                                                      navigate("/my-account-student/trainings") :
+                                                      navigate("/my-account-trainer/trainings")}}>View trainings</Button>
+      </section>
       <Footer />
     </div>
   );

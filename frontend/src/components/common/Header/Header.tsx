@@ -40,7 +40,10 @@ function Header({ user }: HeaderProps) {
   const isStudentEditPage = location.pathname === '/my-account-student/edit';
   const isChangePassPage = location.pathname === '/my-account-trainer/change-password';
   const isTrainingsPage = location.pathname === '/my-account-trainer/trainings';
+  const isStudentTrainingsPage = location.pathname === '/my-account-student/trainings';
+  const isStudentChangePassPage = location.pathname === '/my-account-student/change-password';
   const isAddTrainerPage = location.pathname === '/my-account-student/add-trainer';
+  const isAddTrainingPage = location.pathname === '/my-account-student/add-training';
 
   const handleLogout = async () => {
     try {
@@ -82,7 +85,10 @@ function Header({ user }: HeaderProps) {
         isStudentLoginPage ||
         isMyAccountStudentPage ||
         isAddTrainerPage ||
-        isStudentEditPage
+        isStudentEditPage ||
+        isStudentChangePassPage ||
+        isStudentTrainingsPage ||
+        isAddTrainingPage
       ) && user) ? (
         <div className="relative">
           <img
