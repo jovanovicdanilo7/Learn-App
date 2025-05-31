@@ -33,12 +33,12 @@ function LoginForm() {
       setCaptchaError('Please verify that you are not a robot.');
       return;
     }
-  
+
     try {
       setAuthError('');
       setCaptchaError('');
       setLoading(true);
-  
+
       const response = await axios.post(
         'http://localhost:8000/auth/login',
         {
@@ -49,21 +49,25 @@ function LoginForm() {
           withCredentials: true,
         }
       );
-  
+
       if (response.status === 200) {
         const token = response.data.token;
         const user = response.data.user;
-  
+
         localStorage.setItem('token', token);
-  
+
         const userId = user.id;
-  
+
         try {
-          await axios.get(`http://localhost:8000/trainers/${userId}`);
+          await axios.get(`http://localhost:8000/trainers/${userId}`, {
+            withCredentials: true
+          });
           navigate('/login-trainer');
         } catch (trainerError) {
           try {
-            await axios.get(`http://localhost:8000/students/${userId}`);
+            await axios.get(`http://localhost:8000/students/${userId}`, {
+              withCredentials: true
+            });
             navigate('/login-student');
           } catch (studentError) {
             setAuthError('Unable to determine user role.');

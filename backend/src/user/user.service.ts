@@ -1,72 +1,57 @@
-import { DeleteCommand, GetCommand, PutCommand, QueryCommand, ScanCommand, UpdateCommand, UpdateCommandOutput } from "@aws-sdk/lib-dynamodb";
+import { DeleteCommand, GetCommand, QueryCommand, ScanCommand, UpdateCommand, UpdateCommandOutput } from "@aws-sdk/lib-dynamodb";
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
-import { dbDocClient } from "src/database/dynamodb.service";
-import { v4 as uuidv4 } from 'uuid'
-import * as bcrypt from 'bcrypt';
-import { CreateUserDto } from "./create-user.dto";
 import { JwtService } from "@nestjs/jwt";
-import * as path from "path";
+import { v4 as uuidv4 } from 'uuid'
 import { writeFile } from "fs/promises";
+import * as bcrypt from 'bcrypt';
+import * as path from "path";
+
+import { dbDocClient } from "src/database/dynamodb.service";
 
 @Injectable()
 export class AuthService {
-    constructor(private jwtService: JwtService) {}
+  constructor(private jwtService: JwtService) {}
 
-    async register(createUserDto: CreateUserDto) {
-        const hashedPassword = await bcrypt.hash(createUserDto.password, 10)
-        const user = {
-            id: uuidv4(),
-            firstName: createUserDto.firstName,
-            lastName: createUserDto.lastName,
-            username: createUserDto.username,
-            email: createUserDto.email,
-            password: hashedPassword,
-            photo: createUserDto.photo ?? null,
-            isActive: true,
-          };
+  async loginUser(body: { username: string, password: string }) {
+    const { username, password } = body;
 
-        await dbDocClient.send(
-            new PutCommand({
-                TableName: 'Users',
-                Item: user
-            }),
-        );
+    const result = await dbDocClient.send(
+      new ScanCommand({
+        TableName: 'Users',
+        FilterExpression: 'username = :username',
+        ExpressionAttributeValues: {
+          ':username': username,
+        },
+      }),
+    );
 
-        return {
-            user,
-        };
+    const user = result.Items?.[0];
+
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      throw new BadRequestException({
+        errorCode: 0,
+        message: 'Invalid credentials',
+      });
     }
 
-    async login(body: { username: string, password: string }) {
-        const { username, password } = body;
+    const payload = { id: user.id, username: user.username };
+    const token = this.jwtService.sign(payload);
 
-        const result = await dbDocClient.send(
-            new ScanCommand({
-              TableName: 'Users',
-              FilterExpression: 'username = :username',
-              ExpressionAttributeValues: {
-                ':username': username,
-              },
-            }),
-          );
-          
-        const user = result.Items?.[0];
+    return { token, user };
+  }
 
-        if (!user || !(await bcrypt.compare(password, user.password))) {
-            throw new BadRequestException({
-                errorCode: 0,
-                message: 'Invalid credentials',
-              });
-        }
-
-        const payload = { id: user.id, username: user.username };
-        const token = this.jwtService.sign(payload);
-    
-        return {
-            token,
-            user,
-        };
-    }
+  async setUserActiveStatus(userId: string, isActive: boolean) {
+    await dbDocClient.send(
+      new UpdateCommand({
+        TableName: "Users",
+        Key: { id: userId },
+        UpdateExpression: "SET isActive = :isActive",
+        ExpressionAttributeValues: {
+          ":isActive": isActive,
+        },
+      })
+    );
+  }
 }
 
 export class UserService {
@@ -89,7 +74,14 @@ export class UserService {
         ReturnValues: 'ALL_OLD',
       })
     );
-  
+
+    await this.deleteStudentByUserId(userId);
+    await this.deleteTrainerByUserId(userId);
+
+    return userResult.Attributes;
+  }
+
+  private async deleteStudentByUserId(userId: string) {
     const studentQuery = await dbDocClient.send(
       new QueryCommand({
         TableName: 'Students',
@@ -100,17 +92,44 @@ export class UserService {
         },
       })
     );
-  
+
     const student = studentQuery.Items?.[0];
-    if (student) {
+    if (!student) return;
+
+    await dbDocClient.send(
+      new DeleteCommand({
+        TableName: 'Students',
+        Key: { id: student.id },
+      })
+    );
+
+    const relationQuery = await dbDocClient.send(
+      new QueryCommand({
+        TableName: 'TrainerToStudent',
+        IndexName: 'trainerId-studentId-index',
+        KeyConditionExpression: 'studentId = :stid',
+        ExpressionAttributeValues: {
+          ':stid': userId,
+        },
+      })
+    );
+
+    const relations = relationQuery.Items ?? [];
+
+    for (const relation of relations) {
       await dbDocClient.send(
         new DeleteCommand({
-          TableName: 'Students',
-          Key: { id: student.id },
+          TableName: 'TrainerToStudent',
+          Key: {
+            trainerId: relation.trainerId,
+            studentId: relation.studentId,
+          },
         })
       );
     }
-  
+  }
+
+  private async deleteTrainerByUserId(userId: string) {
     const trainerQuery = await dbDocClient.send(
       new QueryCommand({
         TableName: 'Trainers',
@@ -121,18 +140,40 @@ export class UserService {
         },
       })
     );
-  
+
     const trainer = trainerQuery.Items?.[0];
-    if (trainer) {
+    if (!trainer) return;
+
+    await dbDocClient.send(
+      new DeleteCommand({
+        TableName: 'Trainers',
+        Key: { id: trainer.id },
+      })
+    );
+
+    const relationQuery = await dbDocClient.send(
+      new QueryCommand({
+        TableName: 'TrainerToStudent',
+        KeyConditionExpression: 'trainerId = :trid',
+        ExpressionAttributeValues: {
+          ':trid': userId,
+        },
+      })
+    );
+
+    const relations = relationQuery.Items ?? [];
+
+    for (const relation of relations) {
       await dbDocClient.send(
         new DeleteCommand({
-          TableName: 'Trainers',
-          Key: { id: trainer.id },
+          TableName: 'TrainerToStudent',
+          Key: {
+            trainerId: relation.trainerId,
+            studentId: relation.studentId,
+          },
         })
       );
     }
-  
-    return userResult.Attributes;
   }
 
   async uploadUsersPhoto(userId: string, base64Data: string) {
@@ -177,19 +218,19 @@ export class UserService {
         Key: { id: userId }
       })
     );
-  
+
     const user = userRes.Item;
     if (!user) {
       throw new NotFoundException("User not found.");
     }
-  
+
     const isMatch = await bcrypt.compare(currentPassword, user.password);
     if (!isMatch) {
       throw new BadRequestException("Current password is incorrect.");
     }
-  
+
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-  
+
     await dbDocClient.send(
       new UpdateCommand({
         TableName: 'Users',
@@ -203,16 +244,16 @@ export class UserService {
         }
       }),
     );
-  
+
     return { message: 'Password updated successfully' };
   }
 
   async updateUser(userId: string, updateData: any) {
     const updatePromises: Promise<UpdateCommandOutput>[] = [];
-  
-    const userFields = ['firstName', 'lastName', 'email', 'username', 'isActive'];
+
+    const userFields = ['firstName', 'lastName', 'email', 'username'];
     const userUpdates = this.extractFields(updateData, userFields);
-  
+
     if (Object.keys(userUpdates).length > 0) {
       const expr = this.buildUpdateExpression(userUpdates);
       updatePromises.push(
@@ -225,12 +266,12 @@ export class UserService {
         )
       );
     }
-  
+
     if ('dateOfBirth' in updateData || 'address' in updateData) {
       const studentFields = ['dateOfBirth', 'address'];
       const studentUpdates = this.extractFields(updateData, studentFields);
       const expr = this.buildUpdateExpression(studentUpdates);
-  
+
       updatePromises.push(
         dbDocClient.send(
           new UpdateCommand({
@@ -241,7 +282,7 @@ export class UserService {
         )
       );
     }
-  
+
     if ('specializationId' in updateData) {
       const trainerRes = await dbDocClient.send(
         new ScanCommand({
@@ -252,15 +293,15 @@ export class UserService {
           }
         })
       );
-    
+
       const trainer = trainerRes.Items?.[0];
       if (!trainer) {
         throw new BadRequestException("Trainer not found for this user.");
       }
-    
+
       const trainerUpdates = { specializationId: updateData.specializationId };
       const expr = this.buildUpdateExpression(trainerUpdates);
-    
+
       updatePromises.push(
         dbDocClient.send(
           new UpdateCommand({
@@ -271,10 +312,35 @@ export class UserService {
         )
       );
     }
-  
+
     await Promise.all(updatePromises);
-  
     return { message: 'User data updated successfully' };
+  }
+
+  private extractFields(source: any, keys: string[]) {
+    return Object.fromEntries(
+      Object.entries(source).filter(([key]) => keys.includes(key))
+    );
+  }
+
+  private buildUpdateExpression(values: Record<string, any>) {
+    const setExpressions: string[] = [];
+    const ExpressionAttributeNames: Record<string, string> = {};
+    const ExpressionAttributeValues: Record<string, any> = {};
+
+    Object.entries(values).forEach(([key, val], index) => {
+      const name = `#key${index}`;
+      const value = `:val${index}`;
+      setExpressions.push(`${name} = ${value}`);
+      ExpressionAttributeNames[name] = key;
+      ExpressionAttributeValues[value] = val;
+    });
+
+    return {
+      UpdateExpression: `SET ${setExpressions.join(', ')}`,
+      ExpressionAttributeNames,
+      ExpressionAttributeValues,
+    };
   }
 
   async getAllUsers() {
@@ -285,31 +351,4 @@ export class UserService {
     );
     return result.Items || [];
   }
-
-  private extractFields(source: any, keys: string[]) {
-    return Object.fromEntries(
-      Object.entries(source).filter(([key]) => keys.includes(key))
-    );
-  }
-  
-  private buildUpdateExpression(values: Record<string, any>) {
-    const setExpressions: string[] = [];
-    const ExpressionAttributeNames: Record<string, string> = {};
-    const ExpressionAttributeValues: Record<string, any> = {};
-  
-    Object.entries(values).forEach(([key, val], index) => {
-      const name = `#key${index}`;
-      const value = `:val${index}`;
-      setExpressions.push(`${name} = ${value}`);
-      ExpressionAttributeNames[name] = key;
-      ExpressionAttributeValues[value] = val;
-    });
-  
-    return {
-      UpdateExpression: `SET ${setExpressions.join(', ')}`,
-      ExpressionAttributeNames,
-      ExpressionAttributeValues,
-    };
-  }
-
 }

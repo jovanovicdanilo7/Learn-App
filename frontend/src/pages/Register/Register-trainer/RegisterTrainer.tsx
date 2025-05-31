@@ -37,17 +37,25 @@ function RegisterTrainer() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:8000/specializations")
-      .then((res) => res.json())
-      .then((data) => setSpecializations(data))
-      .catch((err) => console.error("Failed to load specializations:", err));
+    const fetchSpecializations = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/specializations", {
+          withCredentials: true
+        });
+        setSpecializations(response.data);
+      } catch (err) {
+        console.error("Failed to load specializations:", err);
+      }
+    };
+
+    fetchSpecializations();
   }, []);
 
   const onSubmit = async (data: FormData) => {
     try {
       setLoading(true);
       setEmailError('');
-      
+
       const response = await axios.post("http://localhost:8000/trainers",
         {
           firstName: data.firstName,
@@ -59,7 +67,7 @@ function RegisterTrainer() {
           withCredentials: true,
         }
       );
-      
+
       const { username, password } = response.data.credentials;
       setCredentials({ username, password });
       setShowCredentials(true);

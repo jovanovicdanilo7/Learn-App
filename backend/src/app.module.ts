@@ -1,8 +1,9 @@
-import { Module } from '@nestjs/common';
-import { UserModule } from './user/user.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
 import { ConfigModule } from '@nestjs/config';
+import { Module } from '@nestjs/common';
+import { join } from 'path';
+
+import { UserModule } from './user/user.module';
 import { TrainingModule } from './training/training.module';
 import { TrainingTypeModule } from './training-type/training-type.module';
 import { SpecializationsModule } from './specialization/specialization.module';

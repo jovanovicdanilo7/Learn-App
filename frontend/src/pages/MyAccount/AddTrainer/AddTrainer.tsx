@@ -51,11 +51,21 @@ function AddTrainer() {
       setUser(me);
 
       const [studentRes, trainersRes, usersRes, specsRes, linksRes] = await Promise.all([
-        axios.get(`http://localhost:8000/students/${me.id}`),
-        axios.get("http://localhost:8000/trainers"),
-        axios.get("http://localhost:8000/user"),
-        axios.get("http://localhost:8000/specializations"),
-        axios.get("http://localhost:8000/trainer-to-student"),
+        axios.get(`http://localhost:8000/students/${me.id}`, {
+          withCredentials: true
+        }),
+        axios.get("http://localhost:8000/trainers", {
+          withCredentials: true
+        }),
+        axios.get("http://localhost:8000/user", {
+          withCredentials: true
+        }),
+        axios.get("http://localhost:8000/specializations", {
+          withCredentials: true
+        }),
+        axios.get("http://localhost:8000/trainer-to-student", {
+          withCredentials: true
+        }),
       ]);
 
       setStudentId(studentRes.data.id);
@@ -88,10 +98,14 @@ function AddTrainer() {
 
       await Promise.all(
         newLinks.map((trainerId) =>
-          axios.post("http://localhost:8000/trainer-to-student", {
-            trainerId,
-            studentId,
-          })
+          axios.post("http://localhost:8000/trainer-to-student",
+            {
+              trainerId,
+              studentId,
+            },
+            {
+              withCredentials: true
+            })
         )
       );
 

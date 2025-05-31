@@ -44,13 +44,19 @@ function EditProfile() {
       setUser(userData);
 
       if (isStudentAccount) {
-        const studentRes = await axios.get(`http://localhost:8000/students/${userData.id}`);
+        const studentRes = await axios.get(`http://localhost:8000/students/${userData.id}`, {
+          withCredentials: true
+        });
         setStudent(studentRes.data);
       } else {
-        const specsRes = await axios.get("http://localhost:8000/specializations");
+        const specsRes = await axios.get("http://localhost:8000/specializations", {
+          withCredentials: true
+        });
         setSpecializations(specsRes.data);
 
-        const trainerRes = await axios.get(`http://localhost:8000/trainers/${userData.id}`);
+        const trainerRes = await axios.get(`http://localhost:8000/trainers/${userData.id}`, {
+          withCredentials: true
+        });
         setSelectedSpecialization(trainerRes.data.specializationId);
       }
     };
@@ -84,16 +90,24 @@ function EditProfile() {
       isActive: user.isActive,
     };
 
-    await axios.put(`http://localhost:8000/user/${user.id}`, userUpdate);
+    await axios.put(`http://localhost:8000/user/${user.id}`, userUpdate, {
+      withCredentials: true
+    });
 
     if (isStudentAccount && student) {
       await axios.put(`http://localhost:8000/students/${student.id}`, {
         address: student.address,
         dateOfBirth: student.dateOfBirth,
+      }, {
+        withCredentials: true
       });
     } else {
-      await axios.put(`http://localhost:8000/trainers/${user.id}`, {
+      await axios.put(`http://localhost:8000/trainers/${user.id}`,
+      {
         specializationId: selectedSpecialization,
+      },
+      {
+        withCredentials: true
       });
     }
 
@@ -211,7 +225,7 @@ function EditProfile() {
                     value={formatDateForInput(student?.dateOfBirth)}
                     onChange={(e) => handleStudentChange('dateOfBirth', e.target.value)}
                   />
-              
+
                   <label className="block text-sm font-bold text-gray-700">Address</label>
                   <Input
                     value={student?.address || ''}

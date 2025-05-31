@@ -1,15 +1,16 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { PutCommand, QueryCommand, ScanCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
+import { JwtService } from "@nestjs/jwt";
 import { v4 as uuidv4 } from "uuid";
 import * as bcrypt from 'bcrypt';
+
 import { dbDocClient } from "src/database/dynamodb.service";
-import { PutCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
-import { JwtService } from "@nestjs/jwt";
 
 @Injectable()
 export class TrainerService {
   constructor(private jwtService: JwtService) {}
 
-  async create(dto: {
+  async createTrainer(dto: {
     firstName: string;
     lastName: string;
     email: string;
@@ -70,6 +71,7 @@ export class TrainerService {
         TableName: "Trainers",
       })
     );
+
     return result.Items || [];
   }
 
@@ -83,11 +85,44 @@ export class TrainerService {
         },
       })
     );
-  
+
     if (!result.Items || result.Items.length === 0) {
       throw new NotFoundException(`Trainer with userId ${userId} not found.`);
     }
-  
+
     return result.Items[0];
+  }
+
+async updateTrainerSpecializationByUserId(userId: string, specializationId: string) {
+    const queryResult = await dbDocClient.send(
+      new QueryCommand({
+        TableName: "Trainers",
+        IndexName: "userId-index",
+        KeyConditionExpression: "userId = :userId",
+        ExpressionAttributeValues: {
+          ":userId": userId,
+        },
+      })
+    );
+
+    const trainer = queryResult.Items?.[0];
+
+    if (!trainer) {
+      throw new NotFoundException("Trainer not found for given userId");
+    }
+
+    const updateResult = await dbDocClient.send(
+      new UpdateCommand({
+        TableName: "Trainers",
+        Key: { id: trainer.id },
+        UpdateExpression: "SET specializationId = :sid",
+        ExpressionAttributeValues: {
+          ":sid": specializationId,
+        },
+        ReturnValues: "ALL_NEW",
+      })
+    );
+
+    return updateResult.Attributes;
   }
 }

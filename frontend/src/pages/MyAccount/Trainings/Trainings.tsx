@@ -50,15 +50,14 @@ function Trainings() {
       if (trainerName) params.trainerName = trainerName;
       if (specialization) params.specialization = specialization;
     } else {
-      if (trainerName) params.studentName = trainerName; // trainer uses student name
+      if (trainerName) params.studentName = trainerName;
     }
 
     if (dateFrom) params.dateFrom = dateFrom;
     if (dateTo) params.dateTo = dateTo;
 
-    const { data } = await axios.get("http://localhost:8000/trainings/search", { params });
+    const { data } = await axios.get("http://localhost:8000/trainings/search", { params, withCredentials: true });
 
-    // If student, only show their trainings
     const filtered = isStudent
       ? data.filter((t: Training) => t.studentId === user?.id)
       : data;
@@ -103,7 +102,7 @@ function Trainings() {
                     className="border px-4 py-2 rounded-md bg-gray-100"
                   />
                 </div>
-              
+
                 <div className="flex-1">
                   <label className="block text-sm font-semibold mb-2">Specialization</label>
                   <Input
