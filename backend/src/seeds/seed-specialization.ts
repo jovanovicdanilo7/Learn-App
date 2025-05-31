@@ -1,5 +1,5 @@
 import { dbDocClient } from "../database/dynamodb.service";
-import { PutCommand } from "@aws-sdk/lib-dynamodb";
+import { PutCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
 
 export const specializations = [
   { id: "8b7a4ed0-1e90-467b-8bb3-fbfe384d2f64", specialization: "React" },
@@ -16,7 +16,20 @@ export const specializations = [
 ];
 
 const seedSpecializations = async () => {
+  const scanResult = await dbDocClient.send(
+    new ScanCommand({ TableName: "Specializations" })
+  );
+
+  const existingIds = new Set(
+    (scanResult.Items ?? []).map(item => item.id)
+  );
+
   for (const specialization of specializations) {
+    if (existingIds.has(specialization.id)) {
+      console.log(`Skipping existing specialization: ${specialization.specialization}`);
+      continue;
+    }
+
     await dbDocClient.send(
       new PutCommand({
         TableName: "Specializations",
@@ -24,7 +37,7 @@ const seedSpecializations = async () => {
       })
     );
 
-    console.log(`Inserted training type: ${specialization.specialization}`);
+    console.log(`Inserted specialization: ${specialization.specialization}`);
   }
   console.log("Seeding complete.");
 }
