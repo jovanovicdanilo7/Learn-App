@@ -1,4 +1,4 @@
-import { PutCommand } from "@aws-sdk/lib-dynamodb";
+import { PutCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
 import { dbDocClient } from "../database/dynamodb.service";
 
 const trainingTypes = [
@@ -17,7 +17,20 @@ const trainingTypes = [
 ];
 
 const seedTrainingTypes = async () => {
+  const scanResult = await dbDocClient.send(
+    new ScanCommand({ TableName: "TrainingTypes" })
+  );
+
+  const existingIds = new Set(
+    (scanResult.Items ?? []).map(item => item.id)
+  );
+
   for (const type of trainingTypes) {
+    if (existingIds.has(type.id)) {
+      console.log(`Skipping existing training type: ${type.trainingType}`);
+      continue;
+    }
+
     await dbDocClient.send(
       new PutCommand({
         TableName: "TrainingTypes",
@@ -27,7 +40,8 @@ const seedTrainingTypes = async () => {
 
     console.log(`Inserted training type: ${type.trainingType}`);
   }
+
   console.log("Seeding complete.");
-}
+};
 
 seedTrainingTypes().catch(console.error);
