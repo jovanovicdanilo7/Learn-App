@@ -1,12 +1,21 @@
-import { Controller, Get } from "@nestjs/common";
+import { Controller, Get, HttpCode, InternalServerErrorException, UseGuards } from "@nestjs/common";
+import { AuthGuard } from "@nestjs/passport";
+
 import { SpecializationsService } from "./specialization.service";
 
 @Controller('specializations')
 export class SpecializationsController {
-    constructor(private readonly specializationsService: SpecializationsService) {}
+  constructor(private readonly specializationsService: SpecializationsService) {}
 
-    @Get()
-    async getAll() {
-        return this.specializationsService.getAll();
+  @Get()
+  @HttpCode(200)
+  @UseGuards(AuthGuard('jwt'))
+  async getAll() {
+    try {
+      return await this.specializationsService.getAllSpecializations();
+    } catch (error) {
+      console.error("Failed to fetch specializations:", error);
+      throw new InternalServerErrorException("Could not retrieve specializations");
     }
+  }
 }

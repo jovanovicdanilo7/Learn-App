@@ -1,15 +1,15 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { PutCommand, ScanCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
+import { dbDocClient } from "src/database/dynamodb.service";
+import { JwtService } from "@nestjs/jwt";
 import { v4 as uuidv4 } from "uuid";
 import * as bcrypt from "bcrypt";
-import { dbDocClient } from "src/database/dynamodb.service";
-import { PutCommand, ScanCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
-import { JwtService } from "@nestjs/jwt";
 
 @Injectable()
 export class StudentService {
   constructor(private jwtService: JwtService) {}
 
-  async create(dto: {
+  async createStudent(dto: {
     firstName: string;
     lastName: string;
     email: string;
@@ -72,6 +72,7 @@ export class StudentService {
         TableName: "Students",
       })
     );
+
     return result.Items || [];
   }
 
@@ -85,11 +86,11 @@ export class StudentService {
         },
       })
     );
-  
+
     if (!result.Items || result.Items.length === 0) {
       throw new NotFoundException(`Student with userId ${userId} not found.`);
     }
-  
+
     return result.Items[0];
   }
 
@@ -104,15 +105,16 @@ export class StudentService {
       return acc;
     }, {} as Record<string, any>);
 
-    const command = new UpdateCommand({
-      TableName: "Students",
-      Key: { id },
-      UpdateExpression: `SET ${updateFields}`,
-      ExpressionAttributeValues: expressionAttributeValues,
-      ReturnValues: "ALL_NEW",
-    });
+    const result = await dbDocClient.send(
+      new UpdateCommand({
+        TableName: "Students",
+        Key: { id },
+        UpdateExpression: `SET ${updateFields}`,
+        ExpressionAttributeValues: expressionAttributeValues,
+        ReturnValues: "ALL_NEW",
+      })
+    );
 
-    const result = await dbDocClient.send(command);
     return result.Attributes;
   }
 }

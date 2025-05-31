@@ -55,10 +55,18 @@ function AddTraining() {
     const fetchData = async () => {
       const [{ data: me }, { data: allTrainers }, { data: users }, { data: specs }, { data: types }] = await Promise.all([
         axios.get("http://localhost:8000/user/me", { withCredentials: true }),
-        axios.get("http://localhost:8000/trainers"),
-        axios.get("http://localhost:8000/user"),
-        axios.get("http://localhost:8000/specializations"),
-        axios.get("http://localhost:8000/training-types")
+        axios.get("http://localhost:8000/trainers", {
+          withCredentials: true
+        }),
+        axios.get("http://localhost:8000/user", {
+          withCredentials: true
+        }),
+        axios.get("http://localhost:8000/specializations", {
+          withCredentials: true
+        }),
+        axios.get("http://localhost:8000/training-types", {
+          withCredentials: true
+        })
       ]);
 
       setUser(me);

@@ -61,8 +61,12 @@ function MyAccount() {
         setUser(userData);
 
         const [trainerRes, studentRes] = await Promise.allSettled([
-          axios.get(`http://localhost:8000/trainers/${userData.id}`),
-          axios.get(`http://localhost:8000/students/${userData.id}`),
+          axios.get(`http://localhost:8000/trainers/${userData.id}`, {
+            withCredentials: true
+          }),
+          axios.get(`http://localhost:8000/students/${userData.id}`,{
+            withCredentials: true
+          }),
         ]);
 
         if (trainerRes.status === "fulfilled") {
@@ -70,10 +74,18 @@ function MyAccount() {
           setTrainer(trainerData);
 
           const [specializationsRes, linksRes, studentsRes, usersRes] = await Promise.all([
-            axios.get("http://localhost:8000/specializations"),
-            axios.get("http://localhost:8000/trainer-to-student"),
-            axios.get("http://localhost:8000/students"),
-            axios.get("http://localhost:8000/user"),
+            axios.get("http://localhost:8000/specializations", {
+              withCredentials: true
+            }),
+            axios.get("http://localhost:8000/trainer-to-student", {
+              withCredentials: true
+            }),
+            axios.get("http://localhost:8000/students", {
+              withCredentials: true
+            }),
+            axios.get("http://localhost:8000/user", {
+              withCredentials: true
+            }),
           ]);
 
           setSpecializations(specializationsRes.data);
@@ -100,10 +112,18 @@ function MyAccount() {
           setStudent(studentData);
 
           const [linksRes, trainersRes, specsRes, usersRes] = await Promise.all([
-            axios.get("http://localhost:8000/trainer-to-student"),
-            axios.get("http://localhost:8000/trainers"),
-            axios.get("http://localhost:8000/specializations"),
-            axios.get("http://localhost:8000/user"),
+            axios.get("http://localhost:8000/trainer-to-student", {
+              withCredentials: true
+            }),
+            axios.get("http://localhost:8000/trainers", {
+              withCredentials: true
+            }),
+            axios.get("http://localhost:8000/specializations", {
+              withCredentials: true
+            }),
+            axios.get("http://localhost:8000/user", {
+              withCredentials: true
+            }),
           ]);
 
           const links: TrainerToStudent[] = linksRes.data;
@@ -178,7 +198,7 @@ function MyAccount() {
             </div>
 
             <div className="flex gap-4 mt-10">
-              <Button variant="primary" onClick={() => {isStudentAccount ? 
+              <Button variant="primary" onClick={() => {isStudentAccount ?
                                                       navigate("/my-account-student/edit") :
                                                       navigate("/my-account-trainer/edit")}}>
                 Edit profile
@@ -186,7 +206,7 @@ function MyAccount() {
               <Button
                 variant="text"
                 className="bg-green-500 text-white hover:bg-green-600 hover:text-white"
-                onClick={() => {isStudentAccount ? 
+                onClick={() => {isStudentAccount ?
                                                       navigate("/my-account-student/change-password") :
                                                       navigate("/my-account-trainer/change-password")}}>
                 Change Password
@@ -288,7 +308,7 @@ function MyAccount() {
                     await axios.delete("http://localhost:8000/user/me", {
                       withCredentials: true,
                     });
-      
+
                     localStorage.removeItem("token");
                     navigate("/");
                   } catch (err) {
@@ -311,7 +331,7 @@ function MyAccount() {
             participate in quizzes, and track your progress. All our courses are flexible and adaptable
             to your schedule and learning speed.
         </p>
-        <Button variant="primary" onClick={() => {isStudentAccount ? 
+        <Button variant="primary" onClick={() => {isStudentAccount ?
                                                       navigate("/my-account-student/trainings") :
                                                       navigate("/my-account-trainer/trainings")}}>View trainings</Button>
       </section>
