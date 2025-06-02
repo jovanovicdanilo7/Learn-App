@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 import Header from "../../../components/common/Header/Header";
 import Footer from "../../../components/common/Footer/Footer";
@@ -8,6 +10,7 @@ import Input from "../../../components/common/Input/Input";
 import Button from "../../../components/common/Button/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
+import "./Trainings.css"
 
 interface Training {
   id: string;
@@ -34,6 +37,9 @@ function Trainings() {
   const [dateTo, setDateTo] = useState("");
   const [trainings, setTrainings] = useState<Training[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+
   const itemsPerPage = 5;
   const currentTrainings = trainings.slice(
     (currentPage - 1) * itemsPerPage,
@@ -173,33 +179,42 @@ function Trainings() {
           </div>
         )}
 
-        <div className="flex flex-wrap justify-between items-start mb-10 gap-6">
-          <div className="flex flex-col gap-4">
-            {isStudent ? (
-              <div className="flex gap-6">
-                <div className="flex-1">
+        <div className="flex flex-wrap gap-6 mb-10">
+          {isStudent ? (
+            <>
+              <div className="flex-1 min-w-[200px] flex flex-col gap-4">
+                <div>
                   <label className="block text-sm font-semibold mb-2">Trainer name</label>
                   <Input
                     type="text"
                     placeholder="First name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="border px-4 py-2 rounded-md bg-gray-100"
+                    className="w-full border px-4 py-2 rounded-md bg-gray-100"
                   />
                 </div>
-
-                <div className="flex-1">
-                  <label className="block text-sm font-semibold mb-2">Specialization</label>
-                  <Input
-                    type="text"
-                    placeholder="First name"
-                    value={specialization}
-                    onChange={(e) => setSpecialization(e.target.value)}
-                    className="border px-4 py-2 rounded-md bg-gray-100"
-                  />
-                </div>
+                <Button
+                  variant="primary"
+                  onClick={fetchTrainings}
+                  className="bg-purple-600 text-white px-4 py-2 self-start"
+                >
+                  Search
+                </Button>
               </div>
-            ) : (
+
+              <div className="flex-1 min-w-[200px]">
+                <label className="block text-sm font-semibold mb-2">Specialization</label>
+                <Input
+                  type="text"
+                  placeholder="Specialization"
+                  value={specialization}
+                  onChange={(e) => setSpecialization(e.target.value)}
+                  className="w-full border px-4 py-2 rounded-md bg-gray-100"
+                />
+              </div>
+            </>
+          ) : (
+            <div className="flex-1 min-w-[200px] flex flex-col gap-4">
               <div>
                 <label className="block text-sm font-semibold mb-2">Student name</label>
                 <Input
@@ -207,38 +222,43 @@ function Trainings() {
                   placeholder="Name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="border px-4 py-2 rounded-md bg-gray-100"
+                  className="w-full border px-4 py-2 rounded-md bg-gray-100"
                 />
               </div>
-            )}
-
-            <div>
-              <Button variant="primary" onClick={fetchTrainings}>
+              <Button variant="primary" onClick={fetchTrainings} className="bg-purple-600 text-white px-4 py-2 self-start">
                 Search
               </Button>
             </div>
+          )}
+
+          <div className="flex-1 min-w-[200px]">
+            <label className="text-sm font-semibold mb-2 block">From</label>
+            <DatePicker
+              selected={startDate}
+              onChange={(date: Date | null) => {
+                setStartDate(date);
+                setDateFrom(date?.toISOString().split("T")[0] || "");
+              }}
+              dateFormat="yyyy-MM-dd"
+              placeholderText="Select date"
+              className="w-full border border-purple-600 px-4 py-2 rounded-md bg-white"
+              calendarClassName="custom-calendar"
+            />
           </div>
 
-          <div className="flex gap-6 items-start">
-            <div className="flex flex-col">
-              <label className="text-sm font-semibold mb-2">From</label>
-              <Input
-                type="date"
-                value={dateFrom}
-                onChange={(e) => setDateFrom(e.target.value)}
-                className="border border-purple-600 px-4 py-2 rounded-md"
-              />
-            </div>
-
-            <div className="flex flex-col">
-              <label className="text-sm font-semibold mb-2">To</label>
-              <Input
-                type="date"
-                value={dateTo}
-                onChange={(e) => setDateTo(e.target.value)}
-                className="border border-purple-600 px-4 py-2 rounded-md"
-              />
-            </div>
+          <div className="flex-1 min-w-[200px]">
+            <label className="text-sm font-semibold mb-2 block">To</label>
+            <DatePicker
+              selected={endDate}
+              onChange={(date: Date | null) => {
+                setEndDate(date);
+                setDateTo(date?.toISOString().split("T")[0] || "");
+              }}
+              dateFormat="yyyy-MM-dd"
+              placeholderText="Select date"
+              className="w-full border border-purple-600 px-4 py-2 rounded-md bg-white"
+              calendarClassName="custom-calendar"
+            />
           </div>
         </div>
 
