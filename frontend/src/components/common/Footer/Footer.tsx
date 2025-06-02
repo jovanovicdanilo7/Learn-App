@@ -1,11 +1,36 @@
 import { Link } from 'react-router-dom';
 import { faFacebook, faTwitter, faYoutube } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useState } from 'react';
 
 import logo from '../../../images/logo.png'
+import axios from 'axios';
 import Button from '../Button/Button';
+import Input from '../Input/Input';
 
 function Footer() {
+  const [email, setEmail] = useState("");
+  const [feedback, setFeedback] = useState<string | null>(null);
+
+  const handleSubscribe = async () => {
+    if (!email.trim()) {
+      setFeedback("Email is required.");
+      return;
+    }
+
+    try {
+      const response = await axios.post("http://localhost:8000/subscriptions", { email });
+      setFeedback("Thank you for subscribing!");
+      setEmail("");
+    } catch (error: any) {
+      if (error.response?.data?.message) {
+        setFeedback(error.response.data.message);
+      } else {
+        setFeedback("Subscription failed. Please try again later.");
+      }
+    }
+  };
+
   return (
     <footer className="bg-[#F9F9FB] text-[#1A1A1A] px-6 py-10 font-montserrat">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-6 gap-8">
@@ -59,15 +84,18 @@ function Footer() {
           <h4 className="font-semibold text-[#6D5BD0] mb-2">Subscribe to our newsletter</h4>
           <p className="text-sm mb-3">For product announcements and exclusive insights</p>
           <div className="flex border rounded overflow-hidden">
-            <input
+            <Input
               type="email"
               placeholder="Input your email"
               className="px-3 py-2 text-sm w-full focus:outline-none"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
-            <Button variant="primary">
+            <Button onClick={handleSubscribe} className="bg-purple-600 text-white px-4 py-2">
               Subscribe
             </Button>
           </div>
+          {feedback && <p className="text-sm mt-2 text-red-600">{feedback}</p>}
         </div>
       </div>
 

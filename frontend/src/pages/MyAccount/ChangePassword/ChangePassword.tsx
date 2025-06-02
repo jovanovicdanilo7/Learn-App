@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLock } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faLock } from "@fortawesome/free-solid-svg-icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -28,33 +28,20 @@ interface FormData {
 
 function ChangePassword() {
   const navigate = useNavigate();
-  const [user, setUser] = useState<User | null>(null);
   const [serverError, setServerError] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
+
   const location = useLocation();
   const isStudentAccount = location.pathname.includes("/my-account-student");
-
 
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
-    reset
   } = useForm<FormData>();
 
   const newPassword = watch("newPassword");
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const { data: userData } = await axios.get("http://localhost:8000/user/me", {
-        withCredentials: true,
-      });
-      setUser(userData);
-    };
-
-    fetchData();
-  }, []);
 
   const onSubmit = async (data: FormData) => {
     setServerError("");
@@ -65,7 +52,9 @@ function ChangePassword() {
           currentPassword: data.currentPassword,
           newPassword: data.newPassword
         },
-        { withCredentials: true }
+        {
+          withCredentials: true
+        }
       );
 
     setShowSuccess(true);
@@ -80,17 +69,26 @@ function ChangePassword() {
 
   return (
     <div className="flex flex-col min-h-screen font-montserrat">
-      <Header user={user ?? undefined} />
+      <Header/>
+
       {showSuccess ? (
         <main className="flex-grow flex flex-col items-center justify-center text-center px-4">
-          <h1 className="text-4xl font-bold mb-6">Password changed</h1>
-          <div className="text-5xl text-green-500 mb-6">✔</div>
-          <p className="text-gray-600 mb-10">Please proceed sign in with new password</p>
+          <h1 className="text-4xl font-bold mb-10">Password changed</h1>
+
+          <div className="flex justify-center my-10">
+            <div className="h-16 w-16 bg-green-500 rounded-full flex items-center justify-center">
+              <span className="text-white text-2xl">
+                <FontAwesomeIcon icon={faCheck} size="1x" className="text-white-600"/>
+              </span>
+            </div>
+          </div>
+
+          <p className="text-gray-600 my-10">Please proceed sign in with new password</p>
           <Button
             onClick={() => {
               navigate("/login");
             }}
-            className="px-6 py-2 text-white bg-purple-600 hover:bg-purple-700"
+            className="px-6 py-2 text-white bg-purple-600 hover:bg-purple-700 my-10"
           >
             Sign In
           </Button>
@@ -99,13 +97,13 @@ function ChangePassword() {
         <>
           <main className="flex-grow px-4 pt-8 pb-10 md:px-20 max-w-6xl mx-auto w-full">
             <h1 className="text-4xl font-bold mb-10">Security</h1>
-    
+
             <div className="grid md:grid-cols-[250px_1fr] gap-10">
               <div className="flex items-start gap-2 text-lg font-bold text-gray-700">
                 <FontAwesomeIcon icon={faLock} className="text-xl" />
                 Change Password
               </div>
-    
+
               <form onSubmit={handleSubmit(onSubmit)} className="bg-white border rounded-lg shadow-sm p-6">
                 <div className="mb-4">
                   <label className="block font-bold text-gray-700 text-sm mb-1">
@@ -122,7 +120,7 @@ function ChangePassword() {
                   </div>
                   {errors.currentPassword && <p className="text-red-500 text-sm">{errors.currentPassword.message}</p>}
                 </div>
-    
+
                 <div className="mb-4">
                   <label className="block font-bold text-gray-700 text-sm mb-1">
                     New password
@@ -138,7 +136,7 @@ function ChangePassword() {
                   </div>
                   {errors.newPassword && <p className="text-red-500 text-sm">{errors.newPassword.message}</p>}
                 </div>
-    
+
                 <div className="mb-6">
                   <label className="block font-bold text-gray-700 text-sm mb-1">
                     Confirm new password
@@ -158,16 +156,18 @@ function ChangePassword() {
                   </div>
                   {errors.confirmPassword && <p className="text-red-500 text-sm">{errors.confirmPassword.message}</p>}
                 </div>
-    
+
                 {serverError && <p className="text-red-500 text-sm mb-4">{serverError}</p>}
-    
+
                 <div className="flex justify-end gap-4">
                   <Button
                     variant="text"
                     className="text-gray-500 text-sm hover:text-gray-600"
-                    onClick={() => {isStudentAccount ? 
+                    onClick={() => {
+                      isStudentAccount ?
                       navigate("/my-account-student") :
-                      navigate("/my-account-trainer")}}
+                      navigate("/my-account-trainer")
+                    }}
                   >
                     Cancel
                   </Button>

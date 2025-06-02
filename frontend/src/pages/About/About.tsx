@@ -4,6 +4,8 @@ import people from "../../images/people.png";
 import john from "../../images/john.png";
 import sara from "../../images/sara.png";
 import jack from "../../images/jack.png";
+import WelcomeMessage from "../../components/common/WelcomeMessage/WelcomeMessage";
+import TestimonialCard from "../../components/common/TestimonialCard/TestimonialCard";
 
 function About() {
   return (
@@ -12,13 +14,13 @@ function About() {
 
       <main className="flex-grow bg-white font-montserrat mt-10">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl font-bold text-gray-900 mb-6">About Us</h1>
-          <p className="text-lg text-gray-500">
-            Welcome to the 'About Us' section of Learn Platform, where we aim to
+          <WelcomeMessage
+            title="About Us"
+            description="Welcome to the 'About Us' section of Learn Platform, where we aim to
             provide you with a deeper understanding of our philosophy, values, and
             mission. Established in 2023, Learn Platform was born out of a passion
-            for learning and a belief in the power of knowledge to transform lives.
-          </p>
+            for learning and a belief in the power of knowledge to transform lives."
+          />
 
           <div className="my-10">
             <img src={people} alt="People" className="mx-auto" />
@@ -34,34 +36,26 @@ function About() {
                   Aliqua ipsum tempor aliqua eiusmod lorem ad labore culpa aliquip
                 </p>
               </div>
+
               <div className="flex flex-col md:flex-row gap-8 md:w-2/3">
-
-                <div className="bg-gray-50 rounded-lg text-center p-6">
-                  <img src={john} alt="John Doe" className="mx-auto rounded-full border-4 border-white shadow-sm mb-7" />
-                  <h3 className="text-xl font-bold text-gray-900">John Doe</h3>
-                  <p className="text-sm text-indigo-600">Professional title</p>
-                  <p className="text-sm text-gray-500 mt-2">
-                    Pariatur ea consectetur anim qui nisi exerci
-                  </p>
-                </div>
-
-                <div className="bg-gray-50 rounded-lg text-center p-6">
-                  <img src={sara} alt="Sara Rose" className="mx-auto rounded-full border-4 border-white shadow-sm mb-7" />
-                  <h3 className="text-xl font-bold text-gray-900">Sara Rose</h3>
-                  <p className="text-sm text-indigo-600">Professional title</p>
-                  <p className="text-sm text-gray-500 mt-2">
-                    Laborum officia esse cillum mollit eiusmod
-                  </p>
-                </div>
-
-                <div className="bg-gray-50 rounded-lg text-center p-6">
-                  <img src={jack} alt="Jack Black" className="mx-auto rounded-full border-4 border-white shadow-sm mb-5" />
-                  <h3 className="text-xl font-bold text-gray-900">Jack Black</h3>
-                  <p className="text-sm text-indigo-600">Professional title</p>
-                  <p className="text-sm text-gray-500 mt-2">
-                    Culpa adipisicing aute sunt velit cupidatat qui a
-                  </p>
-                </div>
+                <TestimonialCard
+                  image={john}
+                  name="John Doe"
+                  title="Professional title"
+                  description="Pariatur ea consectetur anim qui nisi exerci"
+                />
+                <TestimonialCard
+                  image={sara}
+                  name="Sara Rose"
+                  title="Professional title"
+                  description="Laborum officia esse cillum mollit eiusmod"
+                />
+                <TestimonialCard
+                  image={jack}
+                  name="Jack Black"
+                  title="Professional title"
+                  description="Culpa adipisicing aute sunt velit cupidatat qui a"
+                />
               </div>
             </div>
           </div>

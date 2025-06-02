@@ -41,7 +41,7 @@ const articles = [
 
 function StudentLogin() {
   const [user, setUser] = useState<User | null>(null);
-  
+
   useEffect(() => {
   axios
     .get("http://localhost:8000/user/me", { withCredentials: true })
@@ -51,7 +51,7 @@ function StudentLogin() {
 
   return (
     <div className="flex flex-col min-h-screen font-montserrat">
-      <Header user={user ?? undefined} />
+      <Header />
       <main className="flex-grow px-4 py-10 text-center">
         <div className="max-w-6xl mx-auto">
           <h1 className="text-4xl font-bold mb-2">Hi, {user?.firstName ?? "John"}!</h1>

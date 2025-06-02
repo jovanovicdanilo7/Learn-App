@@ -1,8 +1,9 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
-import { PutCommand, QueryCommand, ScanCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
+import { GetCommand, PutCommand, QueryCommand, ScanCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 import { JwtService } from "@nestjs/jwt";
 import { v4 as uuidv4 } from "uuid";
 import * as bcrypt from 'bcrypt';
+import { unmarshall } from '@aws-sdk/util-dynamodb';
 
 import { dbDocClient } from "src/database/dynamodb.service";
 
@@ -124,5 +125,16 @@ async updateTrainerSpecializationByUserId(userId: string, specializationId: stri
     );
 
     return updateResult.Attributes;
+  }
+
+  async getTrainerById(id: string) {
+    const result = await dbDocClient.send(
+      new GetCommand({
+        TableName: 'Trainers',
+        Key: { id: id }
+      }),
+    );
+
+    return result.Item;
   }
 }

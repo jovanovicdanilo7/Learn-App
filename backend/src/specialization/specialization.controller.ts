@@ -1,5 +1,4 @@
 import { Controller, Get, HttpCode, InternalServerErrorException, UseGuards } from "@nestjs/common";
-import { AuthGuard } from "@nestjs/passport";
 
 import { SpecializationsService } from "./specialization.service";
 
@@ -9,7 +8,6 @@ export class SpecializationsController {
 
   @Get()
   @HttpCode(200)
-  @UseGuards(AuthGuard('jwt'))
   async getAll() {
     try {
       return await this.specializationsService.getAllSpecializations();

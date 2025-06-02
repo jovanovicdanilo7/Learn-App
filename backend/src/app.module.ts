@@ -10,6 +10,7 @@ import { SpecializationsModule } from './specialization/specialization.module';
 import { TrainerModule } from './trainer/trainer.module';
 import { StudentModule } from './student/student.module';
 import { TrainerToStudentModule } from './trainer-to-student/trainer-to-student.module';
+import { SubscriptionModule } from './subscription/subscription.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { TrainerToStudentModule } from './trainer-to-student/trainer-to-student.
     TrainerModule,
     StudentModule,
     TrainerToStudentModule,
+    SubscriptionModule
   ],
 })
 export class AppModule {}
