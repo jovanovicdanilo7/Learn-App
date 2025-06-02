@@ -136,6 +136,12 @@ function Trainings() {
     if (user) fetchTrainings();
   }, [user]);
 
+  useEffect(() => {
+    if (!name && !specialization && !dateFrom && !dateTo && user) {
+      fetchTrainings();
+    }
+  }, [name, specialization, dateFrom, dateTo, user]);
+
   return (
     <div className="flex flex-col min-h-screen font-montserrat">
       <Header />
