@@ -16,7 +16,7 @@ export class AuthController {
     @Res({ passthrough: true }) response: Response
   ) {
     try {
-      const { user, token } = await this.authService.loginUser(body);
+      const { user, token } = await this.authService.loginUser(body, true);
 
       response.cookie('token', token, {
         httpOnly: true,
@@ -65,7 +65,7 @@ export class UserController {
   @UseGuards(AuthGuard('jwt'))
   async getMe(@GetUser() user: { id: string, email: string }) {
     try {
-      return await this.userService.getUserById(user.id)
+      return await this.userService.getUserMe(user.id)
     } catch (error) {
       console.error("Failed to fetch user:", error);
       throw new InternalServerErrorException("Could not fetch user");
@@ -135,6 +135,18 @@ export class UserController {
     } catch (error) {
       console.error("Failed to fetch users:", error);
       throw new InternalServerErrorException("Could not fetch users");
+    }
+  }
+
+  @Get(':id')
+  @HttpCode(200)
+  @UseGuards(AuthGuard('jwt'))
+  async getById(@Param('id') id: string) {
+    try {
+      return await this.userService.getUserById(id);
+    } catch (error) {
+      console.error("Failed to fetch user by id:", error);
+      throw new InternalServerErrorException("Could not retrieve user by id");
     }
   }
 }

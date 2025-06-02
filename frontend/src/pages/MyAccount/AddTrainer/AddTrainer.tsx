@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 import Header from "../../../components/common/Header/Header";
 import Footer from "../../../components/common/Footer/Footer";
 import Button from "../../../components/common/Button/Button";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faAngleRight } from "@fortawesome/free-solid-svg-icons";
 
 interface Trainer {
   id: string;
@@ -33,7 +35,6 @@ interface TrainerToStudent {
 }
 
 function AddTrainer() {
-  const [user, setUser] = useState<User | null>(null);
   const [studentId, setStudentId] = useState<string | null>(null);
   const [trainers, setTrainers] = useState<Trainer[]>([]);
   const [trainerUsers, setTrainerUsers] = useState<User[]>([]);
@@ -41,31 +42,39 @@ function AddTrainer() {
   const [trainerLinks, setTrainerLinks] = useState<TrainerToStudent[]>([]);
   const [selectedTrainerIds, setSelectedTrainerIds] = useState<Set<string>>(new Set());
 
+  const location = useLocation();
   const navigate = useNavigate();
+  const isStudent = location.pathname.includes("/my-account-student");
 
   useEffect(() => {
     const fetchData = async () => {
-      const { data: me } = await axios.get("http://localhost:8000/user/me", {
-        withCredentials: true,
-      });
-      setUser(me);
-
+      const { data: me } = await axios.get("http://localhost:8000/user/me",
+        {
+          withCredentials: true,
+        }
+      );
       const [studentRes, trainersRes, usersRes, specsRes, linksRes] = await Promise.all([
-        axios.get(`http://localhost:8000/students/${me.id}`, {
-          withCredentials: true
-        }),
-        axios.get("http://localhost:8000/trainers", {
-          withCredentials: true
-        }),
-        axios.get("http://localhost:8000/user", {
-          withCredentials: true
-        }),
-        axios.get("http://localhost:8000/specializations", {
-          withCredentials: true
-        }),
-        axios.get("http://localhost:8000/trainer-to-student", {
-          withCredentials: true
-        }),
+        axios.get(`http://localhost:8000/students/${me.id}`,
+          {
+            withCredentials: true
+          }
+        ),
+        axios.get("http://localhost:8000/trainers",
+          {
+            withCredentials: true
+          }
+        ),
+        axios.get("http://localhost:8000/user",
+          {
+            withCredentials: true
+          }
+        ),
+        axios.get("http://localhost:8000/specializations"),
+        axios.get("http://localhost:8000/trainer-to-student",
+          {
+            withCredentials: true
+          }
+        ),
       ]);
 
       setStudentId(studentRes.data.id);
@@ -105,7 +114,8 @@ function AddTrainer() {
             },
             {
               withCredentials: true
-            })
+            }
+          )
         )
       );
 
@@ -125,9 +135,20 @@ function AddTrainer() {
 
   return (
     <div className="font-montserrat min-h-screen flex flex-col">
-      <Header user={user ?? undefined} />
+      <Header />
 
       <main className="flex-grow max-w-7xl mx-auto px-4 py-12 w-full">
+        <div className="mb-4 text-left">
+          <Button
+            variant="text"
+            className="text-purple-600 hover:underline px-0 py-0"
+            onClick={() => navigate(isStudent ? "/my-account-student" : "/my-account-trainer")}
+          >
+            My Account
+          </Button>
+          <FontAwesomeIcon icon={faAngleRight} className="mx-2 text-gray-400"/>
+          <span className="text-gray-600 text-sm font-medium">Add Trainer</span>
+        </div>
         <h1 className="text-4xl font-bold mb-6">Add trainer</h1>
         <p className="text-sm text-gray-600 mb-10">
           Please select trainers for adding them into your trainers list
@@ -141,35 +162,35 @@ function AddTrainer() {
           <div>
             <h2 className="text-2xl font-semibold mb-4">All Trainers</h2>
             <div className="overflow-hidden rounded-lg shadow-sm border">
-                <table className="min-w-full text-sm">
+              <table className="min-w-full text-sm">
                 <thead className="bg-gray-100 text-left">
-                    <tr>
-                    <th className="p-4"></th>
-                    <th className="p-4 font-semibold">Name</th>
-                    <th className="p-4 font-semibold">Specialization</th>
-                    </tr>
+                  <tr>
+                  <th className="p-4"></th>
+                  <th className="p-4 font-semibold">Name</th>
+                  <th className="p-4 font-semibold">Specialization</th>
+                  </tr>
                 </thead>
                 <tbody>
-                    {trainers
-                    .filter((trainer) => !alreadyAddedTrainerIds.includes(trainer.id))
-                    .map((trainer) => (
-                        <tr key={trainer.id} className="border-t">
-                        <td className="p-4">
-                            <input
-                            type="checkbox"
-                            checked={selectedTrainerIds.has(trainer.id)}
-                            onChange={() => toggleSelect(trainer.id)}
-                            />
-                        </td>
-                        <td className="p-4 font-semibold">{getTrainerName(trainer.userId)}</td>
-                        <td className="p-4">{getSpecialization(trainer.specializationId)}</td>
-                        </tr>
-                    ))}
+                  {trainers
+                  .filter((trainer) => !alreadyAddedTrainerIds.includes(trainer.id))
+                  .map((trainer) => (
+                    <tr key={trainer.id} className="border-t">
+                    <td className="p-4">
+                        <input
+                        type="checkbox"
+                        checked={selectedTrainerIds.has(trainer.id)}
+                        onChange={() => toggleSelect(trainer.id)}
+                        />
+                    </td>
+                    <td className="p-4 font-semibold">{getTrainerName(trainer.userId)}</td>
+                    <td className="p-4">{getSpecialization(trainer.specializationId)}</td>
+                    </tr>
+                  ))}
                 </tbody>
-                </table>
+              </table>
             </div>
             <Button className="bg-purple-600 text-white hover:bg-purple-700 mt-5" onClick={handleAdd}>
-                Add
+              Add
             </Button>
           </div>
 
@@ -191,7 +212,8 @@ function AddTrainer() {
                         <td className="p-4 font-semibold">{getTrainerName(trainer.userId)}</td>
                         <td className="p-4">{getSpecialization(trainer.specializationId)}</td>
                       </tr>
-                    ))}
+                    ))
+                  }
                 </tbody>
               </table>
             </div>

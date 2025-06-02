@@ -12,7 +12,7 @@ import { dbDocClient } from "src/database/dynamodb.service";
 export class AuthService {
   constructor(private jwtService: JwtService) {}
 
-  async loginUser(body: { username: string, password: string }) {
+  async loginUser(body: { username: string, password: string }, isActive: boolean) {
     const { username, password } = body;
 
     const result = await dbDocClient.send(
@@ -33,6 +33,17 @@ export class AuthService {
         message: 'Invalid credentials',
       });
     }
+
+    await dbDocClient.send(
+      new UpdateCommand({
+        TableName: "Users",
+        Key: { id: user.id },
+        UpdateExpression: "SET isActive = :isActive",
+        ExpressionAttributeValues: {
+          ":isActive": isActive,
+        },
+      })
+    );
 
     const payload = { id: user.id, username: user.username };
     const token = this.jwtService.sign(payload);
@@ -55,7 +66,7 @@ export class AuthService {
 }
 
 export class UserService {
-  async getUserById(userId: string) {
+  async getUserMe(userId: string) {
     const result = await dbDocClient.send(
       new GetCommand({
         TableName: 'Users',
@@ -69,111 +80,73 @@ export class UserService {
   async deleteUserById(userId: string) {
     const userResult = await dbDocClient.send(
       new DeleteCommand({
-        TableName: 'Users',
+        TableName: "Users",
         Key: { id: userId },
-        ReturnValues: 'ALL_OLD',
+        ReturnValues: "ALL_OLD",
       })
     );
 
-    await this.deleteStudentByUserId(userId);
-    await this.deleteTrainerByUserId(userId);
+    const studentResult = await dbDocClient.send(
+      new ScanCommand({
+        TableName: "Students",
+        FilterExpression: "userId = :userId",
+        ExpressionAttributeValues: {
+          ":userId": userId,
+        },
+      })
+    );
+
+    const student = studentResult.Items?.[0];
+    if (student) {
+      const studentId = student.id;
+
+      await dbDocClient.send(
+        new DeleteCommand({
+          TableName: "Students",
+          Key: { id: studentId },
+        })
+      );
+
+      const relationScan = await dbDocClient.send(
+        new ScanCommand({
+          TableName: "TrainerToStudent",
+        })
+      );
+
+      const relatedRelations = (relationScan.Items ?? []).filter(
+        rel => rel.studentId === studentId
+      );
+
+      for (const relation of relatedRelations) {
+        await dbDocClient.send(
+          new DeleteCommand({
+            TableName: "TrainerToStudent",
+            Key: { id: relation.id },
+          })
+        );
+      }
+
+      const trainingScan = await dbDocClient.send(
+        new ScanCommand({
+          TableName: "Trainings",
+        })
+      );
+
+      const studentTrainings = (trainingScan.Items ?? []).filter(
+        training => training.studentId === studentId
+      );
+
+      for (const training of studentTrainings) {
+        await dbDocClient.send(
+          new DeleteCommand({
+            TableName: "Trainings",
+            Key: { id: training.id },
+          })
+        );
+      }
+    }
 
     return userResult.Attributes;
-  }
-
-  private async deleteStudentByUserId(userId: string) {
-    const studentQuery = await dbDocClient.send(
-      new QueryCommand({
-        TableName: 'Students',
-        IndexName: 'userId-index',
-        KeyConditionExpression: 'userId = :uid',
-        ExpressionAttributeValues: {
-          ':uid': userId,
-        },
-      })
-    );
-
-    const student = studentQuery.Items?.[0];
-    if (!student) return;
-
-    await dbDocClient.send(
-      new DeleteCommand({
-        TableName: 'Students',
-        Key: { id: student.id },
-      })
-    );
-
-    const relationQuery = await dbDocClient.send(
-      new QueryCommand({
-        TableName: 'TrainerToStudent',
-        IndexName: 'trainerId-studentId-index',
-        KeyConditionExpression: 'studentId = :stid',
-        ExpressionAttributeValues: {
-          ':stid': userId,
-        },
-      })
-    );
-
-    const relations = relationQuery.Items ?? [];
-
-    for (const relation of relations) {
-      await dbDocClient.send(
-        new DeleteCommand({
-          TableName: 'TrainerToStudent',
-          Key: {
-            trainerId: relation.trainerId,
-            studentId: relation.studentId,
-          },
-        })
-      );
-    }
-  }
-
-  private async deleteTrainerByUserId(userId: string) {
-    const trainerQuery = await dbDocClient.send(
-      new QueryCommand({
-        TableName: 'Trainers',
-        IndexName: 'userId-index',
-        KeyConditionExpression: 'userId = :uid',
-        ExpressionAttributeValues: {
-          ':uid': userId,
-        },
-      })
-    );
-
-    const trainer = trainerQuery.Items?.[0];
-    if (!trainer) return;
-
-    await dbDocClient.send(
-      new DeleteCommand({
-        TableName: 'Trainers',
-        Key: { id: trainer.id },
-      })
-    );
-
-    const relationQuery = await dbDocClient.send(
-      new QueryCommand({
-        TableName: 'TrainerToStudent',
-        KeyConditionExpression: 'trainerId = :trid',
-        ExpressionAttributeValues: {
-          ':trid': userId,
-        },
-      })
-    );
-
-    const relations = relationQuery.Items ?? [];
-
-    for (const relation of relations) {
-      await dbDocClient.send(
-        new DeleteCommand({
-          TableName: 'TrainerToStudent',
-          Key: {
-            trainerId: relation.trainerId,
-            studentId: relation.studentId,
-          },
-        })
-      );
-    }
   }
 
   async uploadUsersPhoto(userId: string, base64Data: string) {
@@ -350,5 +323,16 @@ export class UserService {
       })
     );
     return result.Items || [];
+  }
+
+  async getUserById(id: string) {
+    const result = await dbDocClient.send(
+      new GetCommand({
+        TableName: 'Users',
+        Key: { id: id }
+      }),
+    );
+
+    return result.Item;
   }
 }

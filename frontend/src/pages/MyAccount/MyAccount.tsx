@@ -6,6 +6,8 @@ import Footer from "../../components/common/Footer/Footer";
 import Header from "../../components/common/Header/Header";
 import Button from "../../components/common/Button/Button";
 import avatar from "../../images/avatar.png";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheck } from "@fortawesome/free-solid-svg-icons";
 
 interface User {
   id: string;
@@ -44,29 +46,38 @@ function MyAccount() {
   const [user, setUser] = useState<User | null>(null);
   const [trainer, setTrainer] = useState<Trainer | null>(null);
   const [student, setStudent] = useState<Student | null>(null);
+
   const [specializations, setSpecializations] = useState<Specialization[]>([]);
   const [students, setStudents] = useState<{ name: string; status: boolean }[]>([]);
-  const [trainersList, setTrainersList] = useState<{ name: string; specialization: string }[]>([]);
+  const [trainers, setTrainersList] = useState<{ name: string; specialization: string }[]>([]);
+
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+
   const isStudentAccount = location.pathname.includes("/my-account-student");
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { data: userData } = await axios.get("http://localhost:8000/user/me", {
-          withCredentials: true,
-        });
+        const { data: userData } = await axios.get("http://localhost:8000/user/me",
+          {
+            withCredentials: true,
+          }
+        );
         setUser(userData);
 
         const [trainerRes, studentRes] = await Promise.allSettled([
-          axios.get(`http://localhost:8000/trainers/${userData.id}`, {
-            withCredentials: true
-          }),
-          axios.get(`http://localhost:8000/students/${userData.id}`,{
-            withCredentials: true
-          }),
+          axios.get(`http://localhost:8000/trainers/${userData.id}`,
+            {
+              withCredentials: true
+            }
+          ),
+          axios.get(`http://localhost:8000/students/${userData.id}`,
+            {
+              withCredentials: true
+            }
+          ),
         ]);
 
         if (trainerRes.status === "fulfilled") {
@@ -74,21 +85,25 @@ function MyAccount() {
           setTrainer(trainerData);
 
           const [specializationsRes, linksRes, studentsRes, usersRes] = await Promise.all([
-            axios.get("http://localhost:8000/specializations", {
-              withCredentials: true
-            }),
-            axios.get("http://localhost:8000/trainer-to-student", {
-              withCredentials: true
-            }),
-            axios.get("http://localhost:8000/students", {
-              withCredentials: true
-            }),
-            axios.get("http://localhost:8000/user", {
-              withCredentials: true
-            }),
+            axios.get("http://localhost:8000/specializations"),
+            axios.get("http://localhost:8000/trainer-to-student",
+              {
+                withCredentials: true
+              }
+            ),
+            axios.get("http://localhost:8000/students",
+              {
+                withCredentials: true
+              }
+            ),
+            axios.get("http://localhost:8000/user",
+              {
+                withCredentials: true
+              }
+            ),
           ]);
-
           setSpecializations(specializationsRes.data);
+
           const links: TrainerToStudent[] = linksRes.data;
           const studentsMap: Student[] = studentsRes.data;
           const users: User[] = usersRes.data;
@@ -98,6 +113,7 @@ function MyAccount() {
             .map((link) => {
               const student = studentsMap.find((s) => s.id === link.studentId);
               const studentUser = users.find((u) => u.id === student?.userId);
+
               return {
                 name: `${studentUser?.firstName ?? "Unknown"} ${studentUser?.lastName ?? ""}`,
                 status: studentUser?.isActive ?? false,
@@ -112,18 +128,22 @@ function MyAccount() {
           setStudent(studentData);
 
           const [linksRes, trainersRes, specsRes, usersRes] = await Promise.all([
-            axios.get("http://localhost:8000/trainer-to-student", {
-              withCredentials: true
-            }),
-            axios.get("http://localhost:8000/trainers", {
-              withCredentials: true
-            }),
-            axios.get("http://localhost:8000/specializations", {
-              withCredentials: true
-            }),
-            axios.get("http://localhost:8000/user", {
-              withCredentials: true
-            }),
+            axios.get("http://localhost:8000/trainer-to-student",
+              {
+                withCredentials: true
+              }
+            ),
+            axios.get("http://localhost:8000/trainers",
+              {
+                withCredentials: true
+              }
+            ),
+            axios.get("http://localhost:8000/specializations"),
+            axios.get("http://localhost:8000/user",
+              {
+                withCredentials: true
+              }
+            ),
           ]);
 
           const links: TrainerToStudent[] = linksRes.data;
@@ -154,9 +174,22 @@ function MyAccount() {
     fetchData();
   }, []);
 
+  const handleDeleteUser = async () => {
+    try {
+      await axios.delete("http://localhost:8000/user/me", {
+        withCredentials: true,
+      });
+
+      navigate("/");
+    } catch (err) {
+      console.error("Failed to delete profile", err);
+      alert("Something went wrong while deleting your profile.");
+    }
+  }
+
   return (
     <div className="flex flex-col min-h-screen font-montserrat">
-      <Header user={user ?? undefined} />
+      <Header/>
 
       <main className="flex-grow px-4 pt-4 pb-10 md:px-20 max-w-7xl mx-auto">
         <h1 className="text-4xl font-bold text-center mb-10">My Account</h1>
@@ -171,10 +204,11 @@ function MyAccount() {
                 alt="avatar"
                 className="w-24 h-24 rounded-lg object-cover"
               />
+
               <div>
                 <div className="text-sm text-gray-600 font-semibold">Status</div>
                 <div className={`font-medium text-sm flex items-center ${user?.isActive ? "text-green-500" : "text-red-500"}`}>
-                  ✔ {user?.isActive ? "Active" : "Not Active"}
+                  <FontAwesomeIcon icon={faCheck} size="1x"/> {user?.isActive ? "Active" : "Not Active"}
                 </div>
               </div>
             </div>
@@ -185,8 +219,15 @@ function MyAccount() {
               <div><span className="font-semibold text-gray-600">User Name</span><div>{user?.username}</div></div>
               {isStudentAccount ? (
                 <>
-                  <div><span className="font-semibold text-gray-600">Date of Birth</span><div>{student?.dateOfBirth ?? "-"}</div></div>
-                  <div><span className="font-semibold text-gray-600">Address</span><div>{student?.address ?? "-"}</div></div>
+                  <div>
+                    <span className="font-semibold text-gray-600">Date of Birth</span>
+                    <div>{student?.dateOfBirth?.trim() ? student.dateOfBirth : "-"}</div>
+                  </div>
+
+                  <div>
+                    <span className="font-semibold text-gray-600">Address</span>
+                    <div>{student?.address?.trim() ? student.address : "-"}</div>
+                  </div>
                 </>
               ) : (
                 <div>
@@ -198,17 +239,23 @@ function MyAccount() {
             </div>
 
             <div className="flex gap-4 mt-10">
-              <Button variant="primary" onClick={() => {isStudentAccount ?
-                                                      navigate("/my-account-student/edit") :
-                                                      navigate("/my-account-trainer/edit")}}>
+              <Button
+                variant="primary"
+                onClick={() => {
+                  isStudentAccount ?
+                  navigate("/my-account-student/edit") :
+                  navigate("/my-account-trainer/edit")
+                }}>
                 Edit profile
               </Button>
               <Button
                 variant="text"
                 className="bg-green-500 text-white hover:bg-green-600 hover:text-white"
-                onClick={() => {isStudentAccount ?
-                                                      navigate("/my-account-student/change-password") :
-                                                      navigate("/my-account-trainer/change-password")}}>
+                onClick={() => {
+                  isStudentAccount ?
+                  navigate("/my-account-student/change-password") :
+                  navigate("/my-account-trainer/change-password")
+                }}>
                 Change Password
               </Button>
             </div>
@@ -241,7 +288,7 @@ function MyAccount() {
                   </tr>
                 </thead>
                 <tbody>
-                  {(isStudentAccount ? trainersList : students).map((entry, index) => (
+                  {(isStudentAccount ? trainers : students).map((entry, index) => (
                     <tr key={index} className="border-t">
                       <td className="p-4 font-semibold">{entry.name}</td>
                       <td className="p-4 font-medium">
@@ -259,6 +306,7 @@ function MyAccount() {
               </table>
             </div>
           </div>
+
           {isStudentAccount && (
             <div className="absolute bottom-0 right-0 pr-4 pb-4">
               <Button
@@ -296,26 +344,14 @@ function MyAccount() {
               If you still wish to delete your account, please click on the 'Confirm' button below.
             </p>
             <div className="flex justify-end gap-4">
-              <button
+              <Button
                 onClick={() => setShowDeleteModal(false)}
                 className="text-gray-500 hover:text-black font-medium"
               >
                 Cancel
-              </button>
+              </Button>
               <button
-                onClick={async () => {
-                  try {
-                    await axios.delete("http://localhost:8000/user/me", {
-                      withCredentials: true,
-                    });
-
-                    localStorage.removeItem("token");
-                    navigate("/");
-                  } catch (err) {
-                    console.error("Failed to delete profile", err);
-                    alert("Something went wrong while deleting your profile.");
-                  }
-                }}
+                onClick={handleDeleteUser}
                 className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
               >
                 Confirm
@@ -324,6 +360,7 @@ function MyAccount() {
           </div>
         </div>
       )}
+
       <section className="text-center px-4 pb-20">
         <h2 className="text-3xl font-bold mb-4">My Trainings</h2>
         <p className="text-gray-600 max-w-xl mx-auto mb-10">
@@ -331,10 +368,17 @@ function MyAccount() {
             participate in quizzes, and track your progress. All our courses are flexible and adaptable
             to your schedule and learning speed.
         </p>
-        <Button variant="primary" onClick={() => {isStudentAccount ?
-                                                      navigate("/my-account-student/trainings") :
-                                                      navigate("/my-account-trainer/trainings")}}>View trainings</Button>
+        <Button
+          variant="primary"
+          onClick={() => {
+            isStudentAccount ?
+            navigate("/my-account-student/trainings") :
+            navigate("/my-account-trainer/trainings")
+          }}>
+          View trainings
+        </Button>
       </section>
+
       <Footer />
     </div>
   );

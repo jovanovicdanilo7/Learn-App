@@ -20,21 +20,16 @@ export class StudentController {
     },
     @Res({ passthrough: true }) response: Response
   ) {
-    try {
-      const { token, credentials } = await this.studentService.createStudent(dto);
+    const { token, credentials } = await this.studentService.createStudent(dto);
 
-      response.cookie("token", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        maxAge: 1000 * 60 * 60 * 24,
-      });
+    response.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 1000 * 60 * 60 * 24,
+    });
 
-      return { credentials };
-    } catch (error) {
-      console.error("Student creation failed:", error);
-      throw new InternalServerErrorException("Could not register student");
-    }
+    return { credentials };
   }
 
   @Get()
@@ -73,6 +68,18 @@ export class StudentController {
     } catch (error) {
       console.error("Failed to update student data:", error);
       throw new InternalServerErrorException("Could not update student data");
+    }
+  }
+
+  @Get('id/:id')
+  @HttpCode(200)
+  @UseGuards(AuthGuard('jwt'))
+  async getById(@Param('id') id: string) {
+    try {
+      return await this.studentService.getStudentById(id);
+    } catch (error) {
+      console.error("Failed to fetch student by id:", error);
+      throw new InternalServerErrorException("Could not retrieve student by id");
     }
   }
 }

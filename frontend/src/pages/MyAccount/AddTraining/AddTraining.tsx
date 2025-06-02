@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Header from "../../../components/common/Header/Header";
 import Footer from "../../../components/common/Footer/Footer";
 import Input from "../../../components/common/Input/Input";
 import Button from "../../../components/common/Button/Button";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faAngleRight } from "@fortawesome/free-solid-svg-icons";
 
 interface Trainer {
   id: string;
@@ -49,7 +51,9 @@ function AddTraining() {
   });
 
   const [searchTerm, setSearchTerm] = useState('');
+  const location = useLocation();
   const navigate = useNavigate();
+  const isStudent = location.pathname.includes("/my-account-student");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,9 +65,7 @@ function AddTraining() {
         axios.get("http://localhost:8000/user", {
           withCredentials: true
         }),
-        axios.get("http://localhost:8000/specializations", {
-          withCredentials: true
-        }),
+        axios.get("http://localhost:8000/specializations"),
         axios.get("http://localhost:8000/training-types", {
           withCredentials: true
         })
@@ -95,12 +97,18 @@ function AddTraining() {
 
   const handleSubmit = async () => {
     if (!user || !formData.trainerId) return;
-
+    const student = await axios.get(`http://localhost:8000/students/${user.id}`,
+      {
+        withCredentials: true
+      }
+    );
+    console.log("Trainer id from form", formData.trainerId);
+    console.log("Trainers: ", trainers);
     const selectedTrainer = trainers.find((t) => t.id === formData.trainerId);
     const selectedType = types.find((t) => t.id === formData.type);
 
     const payload = {
-      studentId: user.id,
+      studentId: student.data.id,
       trainerId: selectedTrainer?.id,
       name: formData.name,
       type: selectedType,
@@ -124,9 +132,28 @@ function AddTraining() {
 
   return (
     <div className="flex flex-col min-h-screen font-montserrat">
-      <Header user={user ?? undefined} />
+      <Header />
 
       <main className="flex-grow px-4 pt-12 pb-20 md:px-20 max-w-7xl mx-auto w-full">
+        <div className="mb-4 text-left">
+          <Button
+            variant="text"
+            className="text-purple-600 hover:underline px-0 py-0"
+            onClick={() => navigate(isStudent ? "/my-account-student" : "/my-account-trainer")}
+          >
+            My Account
+          </Button>
+          <FontAwesomeIcon icon={faAngleRight} className="mx-2 text-gray-400"/>
+          <Button
+            variant="text"
+            className="text-purple-600 hover:underline px-0 py-0"
+            onClick={() => navigate("/my-account-student/trainings")}
+          >
+            Trainings
+          </Button>
+          <FontAwesomeIcon icon={faAngleRight} className="mx-2 text-gray-400"/>
+          <span className="text-gray-600 text-sm font-medium">Add Training</span>
+        </div>
         <h1 className="text-4xl font-bold text-center mb-12">Add passed training</h1>
 
         <div className="grid md:grid-cols-2 gap-20">

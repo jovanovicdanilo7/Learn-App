@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import Header from "../../components/common/Header/Header";
 import Footer from "../../components/common/Footer/Footer";
@@ -8,7 +8,6 @@ import studentImage from "../../images/students.png";
 
 function Register() {
   const navigate = useNavigate();
-  const location = useLocation();
 
   return (
     <div className="flex flex-col min-h-screen font-montserrat">
@@ -21,11 +20,14 @@ function Register() {
           <div className="flex flex-col md:flex-row items-center bg-gray-50 rounded-lg p-6 shadow-md">
             <div className="md:w-1/2 mb-4 md:mb-0 px-12 py-12">
               <h2 className="text-3xl font-bold mb-2">Register as Trainer</h2>
+
               <p className="text-gray-600 mb-4">
                 Do consectetur proident proident id eiusmod deserunt consequat pariatur ad ex velit do Lorem reprehenderit.
               </p>
-              <Button onClick={() => navigate('/register-trainer')}>Join us</Button>
+
+              <Button onClick={() => navigate('/register/trainer')}>Join us</Button>
             </div>
+
             <div className="md:w-1/2">
               <img src={trainerImage} alt="Trainers" className="rounded-lg w-full h-auto object-cover" />
             </div>
@@ -34,11 +36,14 @@ function Register() {
           <div className="flex flex-col md:flex-row items-center bg-gray-50 rounded-lg p-6 shadow-md">
             <div className="md:w-1/2 mb-4 md:mb-0 px-12 py-12">
               <h2 className="text-3xl font-bold mb-2">Register as Student</h2>
+
               <p className="text-gray-600 mb-4">
                 Do consectetur proident proident id eiusmod deserunt consequat pariatur ad ex velit do Lorem reprehenderit.
               </p>
-              <Button onClick={() => navigate('/register-student')}>Join us</Button>
+
+              <Button onClick={() => navigate('/register/student')}>Join us</Button>
             </div>
+
             <div className="md:w-1/2">
               <img src={studentImage} alt="Students" className="rounded-lg w-full h-auto object-cover" />
             </div>

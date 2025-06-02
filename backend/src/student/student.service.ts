@@ -1,9 +1,11 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
-import { PutCommand, ScanCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
-import { dbDocClient } from "src/database/dynamodb.service";
+import { GetCommand, PutCommand, ScanCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 import { JwtService } from "@nestjs/jwt";
 import { v4 as uuidv4 } from "uuid";
 import * as bcrypt from "bcrypt";
+import { unmarshall } from '@aws-sdk/util-dynamodb';
+
+import { dbDocClient } from "src/database/dynamodb.service";
 
 @Injectable()
 export class StudentService {
@@ -116,5 +118,16 @@ export class StudentService {
     );
 
     return result.Attributes;
+  }
+
+  async getStudentById(id: string) {
+    const result = await dbDocClient.send(
+      new GetCommand({
+        TableName: 'Students',
+        Key: { id: id }
+      }),
+    );
+
+    return result.Item;
   }
 }

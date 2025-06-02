@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import {
   faUser,
@@ -7,47 +7,65 @@ import {
   faRightFromBracket,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 import logo from '../../../images/logo.png';
 import avatar from '../../../images/avatar.png';
 import Button from '../Button/Button';
 import Navigation from '../Navigation/Navigation';
-import { Link } from 'react-router-dom';
-import axios from 'axios';
 
-interface HeaderProps {
-  user?: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    photo?: string;
-  };
-}
-
-function Header({ user }: HeaderProps) {
+function Header() {
   const navigate = useNavigate();
   const location = useLocation();
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState<null | {
+    firstName: string;
+    lastName: string;
+    email: string;
+    photo?: string;
+    role?: 'student' | 'trainer';
+  }>(null);
 
   const isLoginPage = location.pathname === '/login';
-  const isTrainerLoginPage = location.pathname === '/login-trainer';
-  const isStudentLoginPage = location.pathname === '/login-student';
-  const isMyAccountPage = location.pathname === '/my-account-trainer';
-  const isMyAccountStudentPage = location.pathname === '/my-account-student';
-  const isEditPage = location.pathname === '/my-account-trainer/edit';
-  const isStudentEditPage = location.pathname === '/my-account-student/edit';
-  const isChangePassPage = location.pathname === '/my-account-trainer/change-password';
-  const isTrainingsPage = location.pathname === '/my-account-trainer/trainings';
-  const isStudentTrainingsPage = location.pathname === '/my-account-student/trainings';
-  const isStudentChangePassPage = location.pathname === '/my-account-student/change-password';
-  const isAddTrainerPage = location.pathname === '/my-account-student/add-trainer';
-  const isAddTrainingPage = location.pathname === '/my-account-student/add-training';
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const { data } = await axios.get("http://localhost:8000/user/me", {
+          withCredentials: true,
+        });
+
+        try {
+          await axios.get(`http://localhost:8000/students/${data.id}`, {
+            withCredentials: true,
+          });
+          data.role = "student";
+        } catch {
+          data.role = "trainer";
+        }
+
+        setCurrentUser(data);
+      } catch (error) {
+        console.error("Failed to fetch user:", error);
+        setCurrentUser(null);
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   const handleLogout = async () => {
     try {
-      await axios.post('http://localhost:8000/auth/logout', {}, { withCredentials: true });
+      await axios.post('http://localhost:8000/auth/logout', {},
+        {
+          withCredentials: true
+        }
+      );
+
+      setCurrentUser(null);
       navigate('/');
     } catch (error) {
       console.error('Logout failed:', error);
@@ -76,23 +94,10 @@ function Header({ user }: HeaderProps) {
         )}
       </div>
 
-      {(!isLoginPage && (
-        isTrainerLoginPage ||
-        isMyAccountPage ||
-        isEditPage ||
-        isChangePassPage ||
-        isTrainingsPage ||
-        isStudentLoginPage ||
-        isMyAccountStudentPage ||
-        isAddTrainerPage ||
-        isStudentEditPage ||
-        isStudentChangePassPage ||
-        isStudentTrainingsPage ||
-        isAddTrainingPage
-      ) && user) ? (
+      {!isLoginPage && currentUser ? (
         <div className="relative">
           <img
-            src={user.photo || avatar}
+            src={currentUser.photo || avatar}
             alt="avatar"
             onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
             className="h-10 w-10 rounded-full cursor-pointer border-2 border-purple-500"
@@ -101,32 +106,32 @@ function Header({ user }: HeaderProps) {
             <div className="absolute right-0 mt-2 w-64 bg-white shadow-lg rounded-lg p-4 z-50">
               <div className="flex items-center mb-4">
                 <img
-                  src={user.photo || avatar}
+                  src={currentUser.photo || avatar}
                   className="w-10 h-10 rounded-full mr-3"
                   alt="avatar"
                 />
                 <div>
                   <div className="font-semibold">
-                    {user.firstName}_{user.lastName}
+                    {currentUser.firstName}_{currentUser.lastName}
                   </div>
                   <div className="text-sm text-gray-500 truncate overflow-hidden whitespace-nowrap max-w-[160px]">
-                    {user.email}
+                    {currentUser.email}
                   </div>
                 </div>
               </div>
-          
+
               <div className="h-px bg-gray-200 w-full mb-10" />
-          
+
               <div className="flex items-center mb-4 space-x-2 text-gray-700">
                 <FontAwesomeIcon icon={faUser} />
                 <Link
-                  to={isStudentLoginPage ? "/my-account-student" : "/my-account-trainer"}
+                  to={currentUser?.role === 'student' ? "/my-account-student" : "/my-account-trainer"}
                   className="text-sm font-medium text-gray-500 hover:text-purple-600"
                 >
                   My Account
                 </Link>
               </div>
-          
+
               <div className="flex items-center justify-between mb-4 text-gray-700">
                 <div className="flex items-center space-x-2">
                   <FontAwesomeIcon icon={faMoon} />
@@ -138,9 +143,9 @@ function Header({ user }: HeaderProps) {
                   <div className="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform transform peer-checked:translate-x-5"></div>
                 </label>
               </div>
-          
+
               <div className="h-px bg-gray-200 w-full mt-10 mb-2" />
-          
+
               <Button
                 onClick={handleLogout}
                 variant="text"
@@ -170,12 +175,14 @@ function Header({ user }: HeaderProps) {
           <div className="flex justify-between items-center mb-6">
             <div>
               <img
-                src={user?.photo || avatar}
+                src={currentUser?.photo || avatar}
                 alt="avatar"
                 className="w-10 h-10 rounded-full mb-1"
               />
-              <div className="font-semibold">John_12</div>
-              <div className="text-sm text-gray-500">John_12@gmail.com</div>
+              <div className="font-semibold">
+                {currentUser?.firstName}_{currentUser?.lastName}
+              </div>
+              <div className="text-sm text-gray-500">{currentUser?.email}</div>
             </div>
             <button onClick={() => setIsMobileMenuOpen(false)}>
               <X className="text-purple-600" />

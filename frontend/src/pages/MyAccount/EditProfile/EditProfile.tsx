@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate, useLocation } from "react-router-dom"; // ✅ CHANGED
+import { useNavigate, useLocation } from "react-router-dom";
 
 import Footer from "../../../components/common/Footer/Footer";
 import Header from "../../../components/common/Header/Header";
@@ -31,6 +31,7 @@ function EditProfile() {
   const [selectedSpecialization, setSelectedSpecialization] = useState('');
   const [student, setStudent] = useState<Student | null>(null);
   const [photoData, setPhotoData] = useState<string>('');
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -38,33 +39,35 @@ function EditProfile() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const { data: userData } = await axios.get("http://localhost:8000/user/me", {
-        withCredentials: true,
-      });
+      const { data: userData } = await axios.get("http://localhost:8000/user/me",
+        {
+          withCredentials: true,
+        }
+      );
       setUser(userData);
 
       if (isStudentAccount) {
-        const studentRes = await axios.get(`http://localhost:8000/students/${userData.id}`, {
-          withCredentials: true
-        });
+        const studentRes = await axios.get(`http://localhost:8000/students/${userData.id}`,
+          {
+            withCredentials: true
+          }
+        );
         setStudent(studentRes.data);
       } else {
-        const specsRes = await axios.get("http://localhost:8000/specializations", {
-          withCredentials: true
-        });
+        const specsRes = await axios.get("http://localhost:8000/specializations");
         setSpecializations(specsRes.data);
 
-        const trainerRes = await axios.get(`http://localhost:8000/trainers/${userData.id}`, {
-          withCredentials: true
-        });
+        const trainerRes = await axios.get(`http://localhost:8000/trainers/${userData.id}`,
+          {
+            withCredentials: true
+          }
+        );
         setSelectedSpecialization(trainerRes.data.specializationId);
       }
     };
 
     fetchData();
   }, []);
-  console.log("STUDENT:", student);
-  console.log("Date to render:", student?.dateOfBirth);
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -90,32 +93,41 @@ function EditProfile() {
       isActive: user.isActive,
     };
 
-    await axios.put(`http://localhost:8000/user/${user.id}`, userUpdate, {
-      withCredentials: true
-    });
+    await axios.put(`http://localhost:8000/user/${user.id}`, userUpdate,
+      {
+        withCredentials: true
+      }
+    );
 
     if (isStudentAccount && student) {
-      await axios.put(`http://localhost:8000/students/${student.id}`, {
-        address: student.address,
-        dateOfBirth: student.dateOfBirth,
-      }, {
-        withCredentials: true
-      });
+      await axios.put(`http://localhost:8000/students/${student.id}`,
+        {
+          address: student.address,
+          dateOfBirth: student.dateOfBirth,
+        },
+        {
+          withCredentials: true
+        }
+      );
     } else {
       await axios.put(`http://localhost:8000/trainers/${user.id}`,
-      {
-        specializationId: selectedSpecialization,
-      },
-      {
-        withCredentials: true
-      });
+        {
+          specializationId: selectedSpecialization,
+        },
+        {
+          withCredentials: true
+        }
+      );
     }
 
     if (photoData) {
-      await axios.post(
-        "http://localhost:8000/user/upload-photo",
-        { data: photoData },
-        { withCredentials: true }
+      await axios.post( "http://localhost:8000/user/upload-photo",
+        {
+          data: photoData
+        },
+        {
+          withCredentials: true
+        }
       );
     }
 
@@ -127,19 +139,28 @@ function EditProfile() {
   };
 
   const handleStudentChange = (field: keyof Student, value: string) => {
-    if (student) setStudent({ ...student, [field]: value });
+    if (!student) return;
+
+    const newValue =
+      field === 'dateOfBirth'
+        ? value.split('-').reverse().join('.')
+        : value;
+
+    setStudent({ ...student, [field]: newValue });
   };
 
   const formatDateForInput = (dateString: string | undefined): string => {
     if (!dateString) return '';
-      const [day, month, year] = dateString.split('.');
+
+    const [day, month, year] = dateString.split('.');
+
     if (!day || !month || !year) return '';
       return `${year.padStart(4, '0')}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
   };
 
   return (
     <div className="flex flex-col min-h-screen font-montserrat">
-      <Header user={user ?? undefined} />
+      <Header/>
 
       <main className="flex-grow px-4 pt-4 pb-10 md:px-20 max-w-7xl mx-auto">
         <h1 className="text-4xl font-bold text-center my-12">My Account</h1>
@@ -190,29 +211,26 @@ function EditProfile() {
 
             <div className="space-y-4">
               <label className="block text-sm font-bold text-gray-700">First Name</label>
-              <input
-                className="w-full border rounded-md px-4 py-2 bg-white"
+              <Input
                 value={user?.firstName || ''}
                 onChange={(e) => handleInputChange('firstName', e.target.value)}
               />
 
               <label className="block text-sm font-bold text-gray-700">Last Name</label>
-              <input
-                className="w-full border rounded-md px-4 py-2 bg-white"
+              <Input
                 value={user?.lastName || ''}
                 onChange={(e) => handleInputChange('lastName', e.target.value)}
               />
 
               <label className="block text-sm font-bold text-gray-700">Username</label>
-              <input
-                className="w-full border rounded-md px-4 py-2 bg-white"
+              <Input
                 value={user?.username || ''}
                 onChange={(e) => handleInputChange('username', e.target.value)}
               />
 
               <label className="block text-sm font-bold text-gray-700">Email</label>
-              <input
-                className="w-full border rounded-md px-4 py-2 bg-white"
+              <Input
+                type="email"
                 value={user?.email || ''}
                 onChange={(e) => handleInputChange('email', e.target.value)}
               />
@@ -233,20 +251,6 @@ function EditProfile() {
                   />
                 </>
               )}
-
-              <div className="flex items-center gap-2">
-                <span className="font-semibold text-sm">Active</span>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="sr-only peer"
-                    checked={user?.isActive || false}
-                    onChange={(e) => handleInputChange('isActive', e.target.checked)}
-                  />
-                  <div className="w-11 h-6 bg-gray-200 peer-checked:bg-purple-600 rounded-full peer peer-focus:ring-2 peer-focus:ring-purple-500 transition-all"></div>
-                  <div className="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform transform peer-checked:translate-x-5"></div>
-                </label>
-              </div>
             </div>
           </div>
 
