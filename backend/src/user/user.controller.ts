@@ -149,4 +149,18 @@ export class UserController {
       throw new InternalServerErrorException("Could not retrieve user by id");
     }
   }
+
+  @Delete('remove-photo')
+  @HttpCode(200)
+  @UseGuards(AuthGuard('jwt'))
+  async removePhoto(
+    @GetUser() user: { id: string; email: string }
+  ) {
+    try {
+      return await this.userService.removeUsersPhoto(user.id);
+    } catch (error) {
+      console.error("Failed to remove user photo:", error);
+      throw new InternalServerErrorException("Could not remove user photo");
+    }
+  }
 }
