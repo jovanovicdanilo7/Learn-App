@@ -31,6 +31,9 @@ function EditProfile() {
   const [selectedSpecialization, setSelectedSpecialization] = useState('');
   const [student, setStudent] = useState<Student | null>(null);
   const [photoData, setPhotoData] = useState<string>('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [showModal, setShowModal] = useState(false);
+  const [photoRemoved, setPhotoRemoved] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -69,16 +72,33 @@ function EditProfile() {
     fetchData();
   }, []);
 
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = (file: File) => {
+    setSelectedFile(file);
+  };
+
+  const handleBrowseChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
+    if (file) handleFileSelect(file);
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files?.[0];
+    if (file && (file.type === 'image/png' || file.type === 'image/jpeg')) {
+      handleFileSelect(file);
+    }
+  };
+
+  const handlePhotoUpload = () => {
+    if (selectedFile) {
       const reader = new FileReader();
       reader.onloadend = () => {
         if (typeof reader.result === 'string') {
           setPhotoData(reader.result);
+          setShowModal(false);
         }
       };
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(selectedFile);
     }
   };
 
@@ -131,6 +151,21 @@ function EditProfile() {
       );
     }
 
+    if (photoRemoved) {
+      await axios.delete(`http://localhost:8000/user/remove-photo`, {
+        withCredentials: true,
+      });
+    } else if (photoData) {
+      await axios.post(`http://localhost:8000/user/upload-photo`,
+        {
+          data: photoData
+        },
+        {
+          withCredentials: true
+        }
+      );
+    }
+
     navigate(isStudentAccount ? "/my-account-student" : "/my-account-trainer");
   };
 
@@ -172,7 +207,7 @@ function EditProfile() {
               <div className="flex-col">
                 <h4 className="font-semibold text-gray-700">Profile photo</h4>
                 <img
-                  src={photoData || user?.photo || avatar}
+                  src={photoData || (!photoRemoved && user?.photo) || avatar}
                   alt="avatar"
                   className="w-24 h-24 rounded-lg object-cover"
                 />
@@ -185,23 +220,22 @@ function EditProfile() {
                 </div>
 
                 <div className="flex gap-4">
-                  <label className="mt-1" htmlFor="imageUpload">
-                    <span className="px-4 py-2 rounded-md text-sm font-medium transition border border-purple-600 text-purple-600 hover:bg-purple-50 cursor-pointer">
-                      Choose image
-                    </span>
-                  </label>
-                  <input
-                    id="imageUpload"
-                    type="file"
-                    accept="image/png, image/jpeg"
-                    className="hidden"
-                    onChange={handlePhotoUpload}
-                  />
+                  <Button
+                    variant="primary"
+                    className="text-purple-600 border-purple-600"
+                    onClick={() => setShowModal(true)}
+                  >
+                    Choose image
+                  </Button>
 
                   <Button
                     variant="text"
                     className="text-gray-400"
-                    onClick={() => setPhotoData('')}
+                    onClick={() => {
+                      setPhotoData('');
+                      setSelectedFile(null);
+                      setPhotoRemoved(true);
+                    }}
                   >
                     Remove
                   </Button>
@@ -285,6 +319,75 @@ function EditProfile() {
           </Button>
           <Button onClick={handleSubmit}>Save changes</Button>
         </div>
+        {showModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center px-4">
+            <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-xl">
+              <h2 className="text-lg font-semibold mb-4 text-center">Upload Profile Photo</h2>
+
+              <div
+                onDrop={handleDrop}
+                onDragOver={(e) => e.preventDefault()}
+                className="border-2 border-dashed border-gray-300 rounded-md p-6 text-center"
+              >
+                {!selectedFile ? (
+                  <>
+                    <div className="flex flex-col items-center space-y-2">
+                      <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2"
+                          viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round"
+                              d="M3 15a4 4 0 014-4h1m6 0h1a4 4 0 014 4m-9 0v6m0 0l-3-3m3 3l3-3"/>
+                      </svg>
+                      <p className="text-gray-600">Drop image here</p>
+                      <p className="text-sm text-gray-400">PNG or JPG only</p>
+                      <p className="text-sm text-gray-500">OR</p>
+                      <label htmlFor="browseInput" className="text-purple-600 hover:underline cursor-pointer">
+                        Browse files
+                      </label>
+                      <input
+                        id="browseInput"
+                        type="file"
+                        accept="image/png, image/jpeg"
+                        className="hidden"
+                        onChange={handleBrowseChange}
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex flex-col items-center gap-3">
+                    <img
+                      src={URL.createObjectURL(selectedFile)}
+                      alt="Preview"
+                      className="w-32 h-32 object-cover rounded-md shadow"
+                    />
+                    <p className="text-sm text-gray-600">{selectedFile.name}</p>
+                    <button
+                      className="text-xs text-red-500 hover:underline"
+                      onClick={() => setSelectedFile(null)}
+                    >
+                      Remove file
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex justify-between items-center mt-6">
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handlePhotoUpload}
+                  className="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 disabled:opacity-50"
+                  disabled={!selectedFile}
+                >
+                  Upload
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
 
       <Footer />

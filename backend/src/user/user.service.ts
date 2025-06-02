@@ -335,4 +335,18 @@ export class UserService {
 
     return result.Item;
   }
+
+  async removeUsersPhoto(userId: string) {
+    await dbDocClient.send(
+      new UpdateCommand({
+        TableName: 'Users',
+        Key: { id: userId },
+        UpdateExpression: 'REMOVE photo',
+      }),
+    );
+
+    return {
+      message: 'Photo removed successfully',
+    };
+  }
 }
