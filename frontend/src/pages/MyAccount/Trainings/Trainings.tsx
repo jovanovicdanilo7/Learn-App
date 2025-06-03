@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { toast } from "react-toastify";
 
 import Header from "../../../components/common/Header/Header";
 import Footer from "../../../components/common/Footer/Footer";
@@ -39,6 +40,7 @@ function Trainings() {
   const [currentPage, setCurrentPage] = useState(1);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
+  const toastShownRef = useRef(false);
 
   const itemsPerPage = 5;
   const currentTrainings = trainings.slice(
@@ -159,6 +161,13 @@ function Trainings() {
       fetchTrainings();
     }
   }, [name, specialization, dateFrom, dateTo, user]);
+
+  useEffect(() => {
+    if (location.state?.showToast && !toastShownRef.current) {
+      toast.success("Training added successfully!");
+      toastShownRef.current = true;
+    }
+  }, [location.state]);
 
   return (
     <div className="flex flex-col min-h-screen font-montserrat">

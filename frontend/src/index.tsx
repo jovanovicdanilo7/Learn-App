@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom/client';
 
 import reportWebVitals from './reportWebVitals';
 import AppRouter from './Routes';
-import "./index.css"
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
