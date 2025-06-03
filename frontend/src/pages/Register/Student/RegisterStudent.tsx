@@ -37,15 +37,18 @@ function RegisterStudent() {
       setLoading(true);
       setEmailError('');
 
-      const response = await axios.post("http://localhost:8000/students", {
-        firstName: data.firstName,
-        lastName: data.lastName,
-        email: data.email,
-        dateOfBirth: data.dateOfBirth,
-        address: data.address
-      }, {
-        withCredentials: true,
-      });
+      const response = await axios.post("http://localhost:8000/students",
+        {
+          firstName: data.firstName,
+          lastName: data.lastName,
+          email: data.email,
+          dateOfBirth: data.dateOfBirth,
+          address: data.address
+        },
+        {
+          withCredentials: true,
+        }
+      );
 
       const { username, password } = response.data.credentials;
       setCredentials({ username, password });

@@ -176,9 +176,11 @@ function MyAccount() {
 
   const handleDeleteUser = async () => {
     try {
-      await axios.delete("http://localhost:8000/user/me", {
-        withCredentials: true,
-      });
+      await axios.delete("http://localhost:8000/user/me",
+        {
+          withCredentials: true,
+        }
+      );
 
       navigate("/");
     } catch (err) {

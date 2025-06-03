@@ -76,52 +76,64 @@ function Trainings() {
     if (dateFrom) params.dateFrom = dateFrom;
     if (dateTo) params.dateTo = dateTo;
 
-    const { data } = await axios.get("http://localhost:8000/trainings/search", {
-      params,
-      withCredentials: true
-    });
-    console.log("Data from search route: ", data);
+    const { data } = await axios.get("http://localhost:8000/trainings/search",
+      {
+        params,
+        withCredentials: true
+      }
+    );
+
     let filtered: Training[] = [];
 
     if (isStudent) {
-      console.log("Current user id: ", user.id);
-      const student = await axios.get(`http://localhost:8000/students/${user.id}`, {
-        withCredentials: true
-      });
-      console.log("Student: ", student);
+      const student = await axios.get(`http://localhost:8000/students/${user.id}`,
+        {
+          withCredentials: true
+        }
+      );
+
       filtered = data.filter((t: Training) => t.studentId === student.data.id);
     } else {
-      const trainer = await axios.get(`http://localhost:8000/trainers/${user.id}`, {
-        withCredentials: true
-      });
+      const trainer = await axios.get(`http://localhost:8000/trainers/${user.id}`,
+        {
+          withCredentials: true
+        }
+      );
       filtered = data.filter((t: Training) => t.trainerId === trainer.data.id);
     }
-    console.log("Filtered data: ", filtered);
+
     const enriched = await Promise.all(
       filtered.map(async (training) => {
         try {
           if (isStudent) {
-            console.log("Current trainings trainer id: ", training.trainerId);
-            const trainer = await axios.get(`http://localhost:8000/trainers/id/${training.trainerId}`, {
-              withCredentials: true
-            });
-            console.log("Trainer: ", trainer);
-            const trainerUser = await axios.get(`http://localhost:8000/user/${trainer.data.userId}`, {
-              withCredentials: true
-            });
-            console.log("User trainer: ", trainerUser);
+            const trainer = await axios.get(`http://localhost:8000/trainers/id/${training.trainerId}`,
+              {
+                withCredentials: true
+              }
+            );
+
+            const trainerUser = await axios.get(`http://localhost:8000/user/${trainer.data.userId}`,
+              {
+                withCredentials: true
+              }
+            );
+
             return {
               ...training,
               trainerName: `${trainerUser.data.firstName} ${trainerUser.data.lastName}`,
             };
           } else {
-            const student = await axios.get(`http://localhost:8000/students/id/${training.studentId}`, {
-              withCredentials: true
-            });
+            const student = await axios.get(`http://localhost:8000/students/id/${training.studentId}`,
+              {
+                withCredentials: true
+              }
+            );
 
-            const studentUser = await axios.get(`http://localhost:8000/user/${student.data.userId}`, {
-              withCredentials: true
-            });
+            const studentUser = await axios.get(`http://localhost:8000/user/${student.data.userId}`,
+              {
+                withCredentials: true
+              }
+            );
 
             return {
               ...training,

@@ -51,6 +51,7 @@ function Home() {
             </p>
 
             <Button variant="primary" onClick={() => navigate('/register')}>Join us</Button>
+            <Button className="md:hidden" variant='text' onClick={() => navigate('/login')}>Sign in</Button>
           </div>
         </div>
       </div>

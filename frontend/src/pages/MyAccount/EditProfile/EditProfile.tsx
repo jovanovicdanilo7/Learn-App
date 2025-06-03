@@ -152,9 +152,10 @@ function EditProfile() {
     }
 
     if (photoRemoved) {
-      await axios.delete(`http://localhost:8000/user/remove-photo`, {
-        withCredentials: true,
-      });
+      await axios.delete(`http://localhost:8000/user/remove-photo`,
+        {
+          withCredentials: true,
+        });
     } else if (photoData) {
       await axios.post(`http://localhost:8000/user/upload-photo`,
         {
