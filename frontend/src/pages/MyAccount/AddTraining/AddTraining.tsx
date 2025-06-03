@@ -116,7 +116,12 @@ function AddTraining() {
           withCredentials: true
         }
       );
-      navigate("/my-account-student/trainings");
+
+      navigate("/my-account-student/trainings",
+        {
+          state: { showToast: true },
+        }
+      );
     } catch (err) {
       console.error("Failed to add training", err);
     }

@@ -1,4 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import Home from './pages/Home/Home';
 import About from './pages/About/About';
@@ -14,10 +16,21 @@ import Trainings from './pages/MyAccount/Trainings/Trainings';
 import StudentLogin from './pages/Login/Student/StudentLogin';
 import AddTrainer from './pages/MyAccount/AddTrainer/AddTrainer';
 import AddTraining from './pages/MyAccount/AddTraining/AddTraining';
+import "./index.css"
 
 export default function AppRouter() {
   return (
     <BrowserRouter>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar
+        closeOnClick
+        pauseOnHover
+        draggable
+        theme="colored"
+      />
+
       <Routes>
         <Route path="/" element={<Home/>}/>
         <Route path="*" element={<Navigate to="/"/>}/>
