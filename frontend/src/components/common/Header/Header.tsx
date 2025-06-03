@@ -34,14 +34,18 @@ function Header() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const { data } = await axios.get("http://localhost:8000/user/me", {
-          withCredentials: true,
-        });
+        const { data } = await axios.get("http://localhost:8000/user/me",
+          {
+            withCredentials: true,
+          }
+        );
 
         try {
-          await axios.get(`http://localhost:8000/students/${data.id}`, {
-            withCredentials: true,
-          });
+          await axios.get(`http://localhost:8000/students/${data.id}`,
+            {
+              withCredentials: true,
+            }
+          );
           data.role = "student";
         } catch {
           data.role = "trainer";
@@ -173,17 +177,19 @@ function Header() {
       {!isLoginPage && isMobileMenuOpen && (
         <div className="fixed top-0 left-0 w-64 h-full bg-white z-50 shadow-lg p-4 transition-transform">
           <div className="flex justify-between items-center mb-6">
-            <div>
-              <img
-                src={currentUser?.photo || avatar}
-                alt="avatar"
-                className="w-10 h-10 rounded-full mb-1"
-              />
-              <div className="font-semibold">
-                {currentUser?.firstName}_{currentUser?.lastName}
+            { currentUser && (
+              <div>
+                <img
+                  src={currentUser?.photo || avatar}
+                  alt="avatar"
+                  className="w-10 h-10 rounded-full mb-1"
+                />
+                <div className="font-semibold">
+                  {currentUser?.firstName}_{currentUser?.lastName}
+                </div>
+                <div className="text-sm text-gray-500">{currentUser?.email}</div>
               </div>
-              <div className="text-sm text-gray-500">{currentUser?.email}</div>
-            </div>
+            )}
             <button onClick={() => setIsMobileMenuOpen(false)}>
               <X className="text-purple-600" />
             </button>

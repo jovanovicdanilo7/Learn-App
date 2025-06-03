@@ -59,16 +59,10 @@ function AddTraining() {
     const fetchData = async () => {
       const [{ data: me }, { data: allTrainers }, { data: users }, { data: specs }, { data: types }] = await Promise.all([
         axios.get("http://localhost:8000/user/me", { withCredentials: true }),
-        axios.get("http://localhost:8000/trainers", {
-          withCredentials: true
-        }),
-        axios.get("http://localhost:8000/user", {
-          withCredentials: true
-        }),
+        axios.get("http://localhost:8000/trainers", { withCredentials: true }),
+        axios.get("http://localhost:8000/user", { withCredentials: true }),
         axios.get("http://localhost:8000/specializations"),
-        axios.get("http://localhost:8000/training-types", {
-          withCredentials: true
-        })
+        axios.get("http://localhost:8000/training-types", { withCredentials: true })
       ]);
 
       setUser(me);
@@ -102,8 +96,7 @@ function AddTraining() {
         withCredentials: true
       }
     );
-    console.log("Trainer id from form", formData.trainerId);
-    console.log("Trainers: ", trainers);
+
     const selectedTrainer = trainers.find((t) => t.id === formData.trainerId);
     const selectedType = types.find((t) => t.id === formData.type);
 
@@ -118,7 +111,11 @@ function AddTraining() {
     };
 
     try {
-      await axios.post("http://localhost:8000/trainings", payload, { withCredentials: true });
+      await axios.post("http://localhost:8000/trainings", payload,
+        {
+          withCredentials: true
+        }
+      );
       navigate("/my-account-student/trainings");
     } catch (err) {
       console.error("Failed to add training", err);
