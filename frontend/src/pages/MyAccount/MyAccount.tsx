@@ -60,7 +60,7 @@ function MyAccount() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { data: userData } = await axios.get("http://localhost:8000/user/me",
+        const { data: userData } = await axios.get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/user/me",
           {
             withCredentials: true,
           }
@@ -68,12 +68,12 @@ function MyAccount() {
         setUser(userData);
 
         const [trainerRes, studentRes] = await Promise.allSettled([
-          axios.get(`http://localhost:8000/trainers/${userData.id}`,
+          axios.get(`https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/trainers/${userData.id}`,
             {
               withCredentials: true
             }
           ),
-          axios.get(`http://localhost:8000/students/${userData.id}`,
+          axios.get(`https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/students/${userData.id}`,
             {
               withCredentials: true
             }
@@ -85,18 +85,18 @@ function MyAccount() {
           setTrainer(trainerData);
 
           const [specializationsRes, linksRes, studentsRes, usersRes] = await Promise.all([
-            axios.get("http://localhost:8000/specializations"),
-            axios.get("http://localhost:8000/trainer-to-student",
+            axios.get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/specializations"),
+            axios.get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/trainer-to-student",
               {
                 withCredentials: true
               }
             ),
-            axios.get("http://localhost:8000/students",
+            axios.get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/students",
               {
                 withCredentials: true
               }
             ),
-            axios.get("http://localhost:8000/user",
+            axios.get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/user",
               {
                 withCredentials: true
               }
@@ -128,18 +128,18 @@ function MyAccount() {
           setStudent(studentData);
 
           const [linksRes, trainersRes, specsRes, usersRes] = await Promise.all([
-            axios.get("http://localhost:8000/trainer-to-student",
+            axios.get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/trainer-to-student",
               {
                 withCredentials: true
               }
             ),
-            axios.get("http://localhost:8000/trainers",
+            axios.get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/trainers",
               {
                 withCredentials: true
               }
             ),
-            axios.get("http://localhost:8000/specializations"),
-            axios.get("http://localhost:8000/user",
+            axios.get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/specializations"),
+            axios.get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/user",
               {
                 withCredentials: true
               }
@@ -176,7 +176,7 @@ function MyAccount() {
 
   const handleDeleteUser = async () => {
     try {
-      await axios.delete("http://localhost:8000/user/me",
+      await axios.delete("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/user/me",
         {
           withCredentials: true,
         }

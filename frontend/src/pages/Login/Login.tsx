@@ -3,7 +3,7 @@ import { faLock, faUserTie, faSpinner } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 
 import Input from "../../components/common/Input/Input";
@@ -41,7 +41,7 @@ function Login() {
       setLoading(true);
 
       const response = await axios.post(
-        'http://localhost:8000/auth/login',
+        'https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/auth/login',
         {
           ...data
         },
@@ -55,14 +55,14 @@ function Login() {
         const userId = user.id;
 
         try {
-          await axios.get(`http://localhost:8000/trainers/${userId}`,
+          await axios.get(`https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/trainers/${userId}`,
             {
               withCredentials: true
             });
           navigate('/login/trainer');
         } catch (trainerError) {
           try {
-            await axios.get(`http://localhost:8000/students/${userId}`,
+            await axios.get(`https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/students/${userId}`,
               {
                 withCredentials: true
               });
@@ -141,9 +141,7 @@ function Login() {
               <div className="text-center text-sm font-bold text-gray-700 mb-4 uppercase">or</div>
               <p className="text-center text-sm font-medium">
                 Don’t have an account?{' '}
-                <a href="/register" className="font-semibold text-purple-700 hover:underline">
-                  Sign up
-                </a>
+                <Link to="/register" className="font-semibold text-purple-700 hover:underline">Sign up</Link>
               </p>
             </form>
           </div>

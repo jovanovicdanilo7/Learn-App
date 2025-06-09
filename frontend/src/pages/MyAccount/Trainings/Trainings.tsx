@@ -11,7 +11,7 @@ import Input from "../../../components/common/Input/Input";
 import Button from "../../../components/common/Button/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
-import "./Trainings.css"
+import "../Calendar.css"
 
 interface Training {
   id: string;
@@ -56,7 +56,7 @@ function Trainings() {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const { data } = await axios.get("http://localhost:8000/user/me",
+      const { data } = await axios.get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/user/me",
         {
           withCredentials: true
         }
@@ -78,7 +78,7 @@ function Trainings() {
     if (dateFrom) params.dateFrom = dateFrom;
     if (dateTo) params.dateTo = dateTo;
 
-    const { data } = await axios.get("http://localhost:8000/trainings/search",
+    const { data } = await axios.get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/trainings/search",
       {
         params,
         withCredentials: true
@@ -88,7 +88,7 @@ function Trainings() {
     let filtered: Training[] = [];
 
     if (isStudent) {
-      const student = await axios.get(`http://localhost:8000/students/${user.id}`,
+      const student = await axios.get(`https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/students/${user.id}`,
         {
           withCredentials: true
         }
@@ -96,7 +96,7 @@ function Trainings() {
 
       filtered = data.filter((t: Training) => t.studentId === student.data.id);
     } else {
-      const trainer = await axios.get(`http://localhost:8000/trainers/${user.id}`,
+      const trainer = await axios.get(`https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/trainers/${user.id}`,
         {
           withCredentials: true
         }
@@ -108,13 +108,13 @@ function Trainings() {
       filtered.map(async (training) => {
         try {
           if (isStudent) {
-            const trainer = await axios.get(`http://localhost:8000/trainers/id/${training.trainerId}`,
+            const trainer = await axios.get(`https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/trainers/id/${training.trainerId}`,
               {
                 withCredentials: true
               }
             );
 
-            const trainerUser = await axios.get(`http://localhost:8000/user/${trainer.data.userId}`,
+            const trainerUser = await axios.get(`https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/user/${trainer.data.userId}`,
               {
                 withCredentials: true
               }
@@ -125,13 +125,13 @@ function Trainings() {
               trainerName: `${trainerUser.data.firstName} ${trainerUser.data.lastName}`,
             };
           } else {
-            const student = await axios.get(`http://localhost:8000/students/id/${training.studentId}`,
+            const student = await axios.get(`https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/students/id/${training.studentId}`,
               {
                 withCredentials: true
               }
             );
 
-            const studentUser = await axios.get(`http://localhost:8000/user/${student.data.userId}`,
+            const studentUser = await axios.get(`https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/user/${student.data.userId}`,
               {
                 withCredentials: true
               }

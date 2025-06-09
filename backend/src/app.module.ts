@@ -11,6 +11,7 @@ import { TrainerModule } from './trainer/trainer.module';
 import { StudentModule } from './student/student.module';
 import { TrainerToStudentModule } from './trainer-to-student/trainer-to-student.module';
 import { SubscriptionModule } from './subscription/subscription.module';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -28,5 +29,6 @@ import { SubscriptionModule } from './subscription/subscription.module';
     TrainerToStudentModule,
     SubscriptionModule
   ],
+  controllers: [AppController],
 })
 export class AppModule {}

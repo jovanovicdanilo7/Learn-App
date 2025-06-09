@@ -2,8 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from "@nestjs/comm
 import { GetCommand, PutCommand, ScanCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 import { JwtService } from "@nestjs/jwt";
 import { v4 as uuidv4 } from "uuid";
-import * as bcrypt from "bcrypt";
-import { unmarshall } from '@aws-sdk/util-dynamodb';
+import * as bcrypt from "bcryptjs";
 
 import { dbDocClient } from "src/database/dynamodb.service";
 

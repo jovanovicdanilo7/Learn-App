@@ -7,6 +7,9 @@ import Input from "../../../components/common/Input/Input";
 import Button from "../../../components/common/Button/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleRight } from "@fortawesome/free-solid-svg-icons";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import "../Calendar.css"
 
 interface Trainer {
   id: string;
@@ -38,9 +41,9 @@ function AddTraining() {
   const [user, setUser] = useState<User | null>(null);
   const [trainers, setTrainers] = useState<Trainer[]>([]);
   const [trainerUsers, setTrainerUsers] = useState<User[]>([]);
-  const [specializations, setSpecializations] = useState<Specialization[]>([]);
   const [types, setTypes] = useState<TrainingType[]>([]);
   const [filteredTrainerIds, setFilteredTrainerIds] = useState<string[]>([]);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     date: '',
@@ -57,18 +60,16 @@ function AddTraining() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const [{ data: me }, { data: allTrainers }, { data: users }, { data: specs }, { data: types }] = await Promise.all([
-        axios.get("http://localhost:8000/user/me", { withCredentials: true }),
-        axios.get("http://localhost:8000/trainers", { withCredentials: true }),
-        axios.get("http://localhost:8000/user", { withCredentials: true }),
-        axios.get("http://localhost:8000/specializations"),
-        axios.get("http://localhost:8000/training-types", { withCredentials: true })
+      const [{ data: me }, { data: allTrainers }, { data: users }, { data: types }] = await Promise.all([
+        axios.get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/user/me", { withCredentials: true }),
+        axios.get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/trainers", { withCredentials: true }),
+        axios.get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/user", { withCredentials: true }),
+        axios.get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/training-types", { withCredentials: true })
       ]);
 
       setUser(me);
       setTrainers(allTrainers);
       setTrainerUsers(users);
-      setSpecializations(specs);
       setTypes(types);
     };
 
@@ -91,7 +92,7 @@ function AddTraining() {
 
   const handleSubmit = async () => {
     if (!user || !formData.trainerId) return;
-    const student = await axios.get(`http://localhost:8000/students/${user.id}`,
+    const student = await axios.get(`https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/students/${user.id}`,
       {
         withCredentials: true
       }
@@ -111,7 +112,7 @@ function AddTraining() {
     };
 
     try {
-      await axios.post("http://localhost:8000/trainings", payload,
+      await axios.post("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/trainings", payload,
         {
           withCredentials: true
         }
@@ -171,10 +172,16 @@ function AddTraining() {
 
             <div>
               <label className="block font-semibold text-sm mb-1">Training start date</label>
-              <Input
-                type="date"
-                value={formData.date}
-                onChange={(e) => handleChange('date', e.target.value)}
+              <DatePicker
+                selected={selectedDate}
+                onChange={(date: Date | null) => {
+                  setSelectedDate(date);
+                  handleChange('date', date?.toISOString().split("T")[0] || "");
+                }}
+                dateFormat="yyyy-MM-dd"
+                placeholderText="Select date"
+                className="bg-gray-100 w-full px-4 py-2 rounded-md pr-10 outline-none border transition"
+                calendarClassName="custom-calendar"
               />
             </div>
 
@@ -182,9 +189,16 @@ function AddTraining() {
               <label className="block font-semibold text-sm mb-1">Duration (in days)</label>
               <Input
                 type="number"
+                min="1"
+                step="1"
                 placeholder="Enter duration"
                 value={formData.duration}
-                onChange={(e) => handleChange('duration', e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (/^\d*$/.test(value)) {
+                    handleChange('duration', value);
+                  }
+                }}
               />
             </div>
 

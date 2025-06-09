@@ -1,0 +1,15 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowCloudFrontAccess",
+      "Effect": "Allow",
+      "Principal": {
+        "CanonicalUser": "a2bedfe6004649e0e45a672720f5bdcdf21ea7533c551c7b80291b2c7dfeac4ffdffe621fbefade20555dbb33fd7e1ae"
+      },
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::learn-app-frontend-bucket-prod/*"
+    }
+  ]
+}
+

@@ -13,19 +13,13 @@ export class AuthController {
   @HttpCode(200)
   async login(
     @Body() body: { username: string, password: string },
-    @Res({ passthrough: true }) response: Response
+    @Res() res: Response
   ) {
     try {
       const { user, token } = await this.authService.loginUser(body, true);
 
-      response.cookie('token', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 1000 * 60 * 60 * 24,
-      });
-
-      return { user };
+      res.setHeader('Set-Cookie', `token=${token}; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=${60 * 60 * 24}`);
+      res.status(200).json({ user });
     } catch (error) {
       console.error("Failed to login user:", error);
       throw new InternalServerErrorException("Could not login user");
@@ -36,7 +30,7 @@ export class AuthController {
   @HttpCode(200)
   @UseGuards(AuthGuard("jwt"))
   async logout(
-    @Res({ passthrough: true }) res: Response,
+    @Res() res: Response,
     @GetUser() user: { id: string }
   ) {
     try {
@@ -44,11 +38,12 @@ export class AuthController {
 
       res.clearCookie('token', {
         httpOnly: true,
-        sameSite: 'lax',
-        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'none',
+        secure: true,
+        path: '/',
       });
 
-      return { message: 'Logout successful' };
+      res.status(200).json({ message: 'Logout successful' });
     } catch (error) {
       console.error("Failed to logout user:", error);
       throw new InternalServerErrorException("Could not logout user");

@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 import Footer from "../../../components/common/Footer/Footer";
 import Header from "../../../components/common/Header/Header";
 import Button from "../../../components/common/Button/Button";
 import avatar from "../../../images/avatar.png";
 import Input from "../../../components/common/Input/Input";
+import "../Calendar.css"
 
 interface User {
   id: string;
@@ -42,7 +45,7 @@ function EditProfile() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const { data: userData } = await axios.get("http://localhost:8000/user/me",
+      const { data: userData } = await axios.get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/user/me",
         {
           withCredentials: true,
         }
@@ -50,17 +53,17 @@ function EditProfile() {
       setUser(userData);
 
       if (isStudentAccount) {
-        const studentRes = await axios.get(`http://localhost:8000/students/${userData.id}`,
+        const studentRes = await axios.get(`https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/students/${userData.id}`,
           {
             withCredentials: true
           }
         );
         setStudent(studentRes.data);
       } else {
-        const specsRes = await axios.get("http://localhost:8000/specializations");
+        const specsRes = await axios.get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/specializations");
         setSpecializations(specsRes.data);
 
-        const trainerRes = await axios.get(`http://localhost:8000/trainers/${userData.id}`,
+        const trainerRes = await axios.get(`https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/trainers/${userData.id}`,
           {
             withCredentials: true
           }
@@ -113,14 +116,14 @@ function EditProfile() {
       isActive: user.isActive,
     };
 
-    await axios.put(`http://localhost:8000/user/${user.id}`, userUpdate,
+    await axios.put(`https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/user/${user.id}`, userUpdate,
       {
         withCredentials: true
       }
     );
 
     if (isStudentAccount && student) {
-      await axios.put(`http://localhost:8000/students/${student.id}`,
+      await axios.put(`https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/students/${student.id}`,
         {
           address: student.address,
           dateOfBirth: student.dateOfBirth,
@@ -130,7 +133,7 @@ function EditProfile() {
         }
       );
     } else {
-      await axios.put(`http://localhost:8000/trainers/${user.id}`,
+      await axios.put(`https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/trainers/${user.id}`,
         {
           specializationId: selectedSpecialization,
         },
@@ -141,7 +144,7 @@ function EditProfile() {
     }
 
     if (photoData) {
-      await axios.post( "http://localhost:8000/user/upload-photo",
+      await axios.post( "https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/user/upload-photo",
         {
           data: photoData
         },
@@ -152,12 +155,12 @@ function EditProfile() {
     }
 
     if (photoRemoved) {
-      await axios.delete(`http://localhost:8000/user/remove-photo`,
+      await axios.delete(`https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/user/remove-photo`,
         {
           withCredentials: true,
         });
     } else if (photoData) {
-      await axios.post(`http://localhost:8000/user/upload-photo`,
+      await axios.post(`https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/user/upload-photo`,
         {
           data: photoData
         },
@@ -183,15 +186,6 @@ function EditProfile() {
         : value;
 
     setStudent({ ...student, [field]: newValue });
-  };
-
-  const formatDateForInput = (dateString: string | undefined): string => {
-    if (!dateString) return '';
-
-    const [day, month, year] = dateString.split('.');
-
-    if (!day || !month || !year) return '';
-      return `${year.padStart(4, '0')}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
   };
 
   return (
@@ -273,10 +267,23 @@ function EditProfile() {
               {isStudentAccount && (
                 <>
                   <label className="block text-sm font-bold text-gray-700">Date of Birth</label>
-                  <Input
-                    type="date"
-                    value={formatDateForInput(student?.dateOfBirth)}
-                    onChange={(e) => handleStudentChange('dateOfBirth', e.target.value)}
+                  <DatePicker
+                    selected={
+                      student?.dateOfBirth
+                        ? new Date(
+                            student.dateOfBirth.split('.').reverse().join('-')
+                          )
+                        : null
+                    }
+                    onChange={(date: Date | null) => {
+                      if (!date) return;
+                      const formatted = `${String(date.getDate()).padStart(2, '0')}.${String(date.getMonth() + 1).padStart(2, '0')}.${date.getFullYear()}`;
+                      handleStudentChange('dateOfBirth', formatted);
+                    }}
+                    dateFormat="dd.MM.yyyy"
+                    placeholderText="Select date"
+                    className="w-full"
+                    customInput={<Input />}
                   />
 
                   <label className="block text-sm font-bold text-gray-700">Address</label>
