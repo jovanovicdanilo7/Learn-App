@@ -3,7 +3,7 @@ import { BadRequestException, Injectable, NotFoundException } from "@nestjs/comm
 import { JwtService } from "@nestjs/jwt";
 import { v4 as uuidv4 } from 'uuid'
 import { writeFile } from "fs/promises";
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import * as path from "path";
 
 import { dbDocClient } from "src/database/dynamodb.service";

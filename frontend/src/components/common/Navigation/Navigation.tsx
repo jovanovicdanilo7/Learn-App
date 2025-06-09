@@ -19,14 +19,14 @@ function Navigation({ currentPath, mobile = false }: NavigationProps) {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const { data } = await axios.get("http://localhost:8000/user/me",
+        const { data } = await axios.get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/user/me",
           {
             withCredentials: true,
           }
         );
 
         try {
-          await axios.get(`http://localhost:8000/students/${data.id}`,
+          await axios.get(`https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/students/${data.id}`,
             {
               withCredentials: true,
             }

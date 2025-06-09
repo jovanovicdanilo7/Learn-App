@@ -63,3 +63,7 @@
 .react-datepicker__triangle {
   left: 1rem !important;
 }
+
+.react-datepicker-wrapper, .react-datepicker__input-container {
+  display: block;
+}

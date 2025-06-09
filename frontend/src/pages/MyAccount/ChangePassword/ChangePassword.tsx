@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faLock } from "@fortawesome/free-solid-svg-icons";
@@ -9,16 +9,6 @@ import Footer from "../../../components/common/Footer/Footer";
 import Header from "../../../components/common/Header/Header";
 import Button from "../../../components/common/Button/Button";
 import Input from "../../../components/common/Input/Input";
-
-interface User {
-  id: string;
-  firstName: string;
-  lastName: string;
-  username: string;
-  email: string;
-  isActive: boolean;
-  photo?: string;
-}
 
 interface FormData {
   currentPassword: string;
@@ -47,7 +37,7 @@ function ChangePassword() {
     setServerError("");
     try {
       await axios.put(
-        "http://localhost:8000/user/update-password",
+        "https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/user/update-password",
         {
           currentPassword: data.currentPassword,
           newPassword: data.newPassword
@@ -73,7 +63,7 @@ function ChangePassword() {
 
       {showSuccess ? (
         <main className="flex-grow flex flex-col items-center justify-center text-center px-4">
-          <h1 className="text-4xl font-bold mb-10">Password changed</h1>
+          <h1 className="text-4xl font-bold my-10">Password changed</h1>
 
           <div className="flex justify-center my-10">
             <div className="h-16 w-16 bg-green-500 rounded-full flex items-center justify-center">

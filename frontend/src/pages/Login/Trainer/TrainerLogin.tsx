@@ -9,13 +9,6 @@ import Footer from "../../../components/common/Footer/Footer";
 import Header from "../../../components/common/Header/Header";
 import WelcomeMessage from "../../../components/common/WelcomeMessage/WelcomeMessage";
 
-interface User {
-  firstName: string;
-  lastName: string;
-  email: string;
-  photo?: string;
-}
-
 const articles = [
   {
     title: "Aliqua Irure Tempor Lorem Occaecat Volup",
@@ -45,7 +38,7 @@ function TrainerLogin() {
 
   useEffect(() => {
   axios
-    .get("http://localhost:8000/user/me", { withCredentials: true })
+    .get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/user/me", { withCredentials: true })
     .then((res) => {
       setTitle("Hi, " + (res.data.firstName ?? "John") + "!");
     })
