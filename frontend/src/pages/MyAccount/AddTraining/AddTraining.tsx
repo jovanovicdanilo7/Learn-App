@@ -61,10 +61,10 @@ function AddTraining() {
   useEffect(() => {
     const fetchData = async () => {
       const [{ data: me }, { data: allTrainers }, { data: users }, { data: types }] = await Promise.all([
-        axios.get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/user/me", { withCredentials: true }),
-        axios.get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/trainers", { withCredentials: true }),
-        axios.get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/user", { withCredentials: true }),
-        axios.get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/training-types", { withCredentials: true })
+        axios.get("https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/user/me", { withCredentials: true }),
+        axios.get("https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/trainers", { withCredentials: true }),
+        axios.get("https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/user", { withCredentials: true }),
+        axios.get("https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/training-types", { withCredentials: true })
       ]);
 
       setUser(me);
@@ -92,7 +92,7 @@ function AddTraining() {
 
   const handleSubmit = async () => {
     if (!user || !formData.trainerId) return;
-    const student = await axios.get(`https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/students/${user.id}`,
+    const student = await axios.get(`https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/students/${user.id}`,
       {
         withCredentials: true
       }
@@ -112,7 +112,7 @@ function AddTraining() {
     };
 
     try {
-      await axios.post("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/trainings", payload,
+      await axios.post("https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/trainings", payload,
         {
           withCredentials: true
         }

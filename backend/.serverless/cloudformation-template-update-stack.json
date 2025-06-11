@@ -155,7 +155,10 @@
                     "dynamodb:GetItem",
                     "dynamodb:DeleteItem"
                   ],
-                  "Resource": "arn:aws:dynamodb:eu-north-1:*:table/Students"
+                  "Resource": [
+                    "arn:aws:dynamodb:eu-north-1:*:table/Students",
+                    "arn:aws:dynamodb:eu-north-1:*:table/Students/index/userId-index"
+                  ]
                 },
                 {
                   "Effect": "Allow",
@@ -167,7 +170,10 @@
                     "dynamodb:Query",
                     "dynamodb:DeleteItem"
                   ],
-                  "Resource": "arn:aws:dynamodb:eu-north-1:*:table/Trainers"
+                  "Resource": [
+                    "arn:aws:dynamodb:eu-north-1:*:table/Trainers",
+                    "arn:aws:dynamodb:eu-north-1:*:table/Trainers/index/userId-index"
+                  ]
                 },
                 {
                   "Effect": "Allow",
@@ -207,6 +213,15 @@
                     "dynamodb:DeleteItem"
                   ],
                   "Resource": "arn:aws:dynamodb:eu-north-1:*:table/Trainings"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:PutObject",
+                    "s3:GetObject",
+                    "s3:DeleteObject"
+                  ],
+                  "Resource": "arn:aws:s3:::learn-app-user-photos-bucket/*"
                 }
               ]
             }
@@ -235,7 +250,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/learn-app/prod/1749295662853-2025-06-07T11:27:42.853Z/api.zip"
+          "S3Key": "serverless/learn-app/prod/1749675563783-2025-06-11T20:59:23.783Z/api.zip"
         },
         "Handler": "dist/lambda.handler",
         "Runtime": "nodejs18.x",
@@ -260,14 +275,14 @@
         "ApiLogGroup"
       ]
     },
-    "ApiLambdaVersionaQE34yLzWAZW9CwM4bs8plREeAyJx497gyi6fQKhw": {
+    "ApiLambdaVersion6S3jKtg56TAndW7Jj2GgyOmIcI5RB93HGA45p5eAWlc": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "ApiLambdaFunction"
         },
-        "CodeSha256": "H3O8QyT60UwC8skoBIT0t/qVhV93HsyOaeJkCt4VJBY="
+        "CodeSha256": "wGmW3i7RYqZ1gSWWNyttSdCBLjuPDlseuylfHNvh3VA="
       }
     },
     "HttpApi": {
@@ -295,7 +310,7 @@
           "AllowOrigins": [
             "http://localhost:3000",
             "http://learnapp-frontend-prod.s3-website.eu-north-1.amazonaws.com",
-            "https://cloudfront-url.com"
+            "https://dx01g0o1o4sy0.cloudfront.net"
           ]
         }
       }
@@ -401,7 +416,7 @@
     "ApiLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "ApiLambdaVersionaQE34yLzWAZW9CwM4bs8plREeAyJx497gyi6fQKhw"
+        "Ref": "ApiLambdaVersion6S3jKtg56TAndW7Jj2GgyOmIcI5RB93HGA45p5eAWlc"
       },
       "Export": {
         "Name": "sls-learn-app-prod-ApiLambdaFunctionQualifiedArn"

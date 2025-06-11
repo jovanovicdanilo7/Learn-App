@@ -45,7 +45,7 @@ function EditProfile() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const { data: userData } = await axios.get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/user/me",
+      const { data: userData } = await axios.get("https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/user/me",
         {
           withCredentials: true,
         }
@@ -53,17 +53,17 @@ function EditProfile() {
       setUser(userData);
 
       if (isStudentAccount) {
-        const studentRes = await axios.get(`https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/students/${userData.id}`,
+        const studentRes = await axios.get(`https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/students/${userData.id}`,
           {
             withCredentials: true
           }
         );
         setStudent(studentRes.data);
       } else {
-        const specsRes = await axios.get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/specializations");
+        const specsRes = await axios.get("https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/specializations");
         setSpecializations(specsRes.data);
 
-        const trainerRes = await axios.get(`https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/trainers/${userData.id}`,
+        const trainerRes = await axios.get(`https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/trainers/${userData.id}`,
           {
             withCredentials: true
           }
@@ -116,14 +116,14 @@ function EditProfile() {
       isActive: user.isActive,
     };
 
-    await axios.put(`https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/user/${user.id}`, userUpdate,
+    await axios.put(`https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/user/${user.id}`, userUpdate,
       {
         withCredentials: true
       }
     );
 
     if (isStudentAccount && student) {
-      await axios.put(`https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/students/${student.id}`,
+      await axios.put(`https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/students/${student.id}`,
         {
           address: student.address,
           dateOfBirth: student.dateOfBirth,
@@ -133,7 +133,7 @@ function EditProfile() {
         }
       );
     } else {
-      await axios.put(`https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/trainers/${user.id}`,
+      await axios.put(`https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/trainers/${user.id}`,
         {
           specializationId: selectedSpecialization,
         },
@@ -144,7 +144,7 @@ function EditProfile() {
     }
 
     if (photoData) {
-      await axios.post( "https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/user/upload-photo",
+      await axios.post( "https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/user/upload-photo",
         {
           data: photoData
         },
@@ -155,12 +155,12 @@ function EditProfile() {
     }
 
     if (photoRemoved) {
-      await axios.delete(`https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/user/remove-photo`,
+      await axios.delete(`https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/user/remove-photo`,
         {
           withCredentials: true,
         });
     } else if (photoData) {
-      await axios.post(`https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/user/upload-photo`,
+      await axios.post(`https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/user/upload-photo`,
         {
           data: photoData
         },

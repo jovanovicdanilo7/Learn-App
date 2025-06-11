@@ -18,18 +18,17 @@ export class StudentController {
       dateOfBirth?: string;
       address?: string;
     },
-    @Res({ passthrough: true }) response: Response
+    @Res() res: Response
   ) {
-    const { token, credentials } = await this.studentService.createStudent(dto);
+    try {
+      const { token, credentials } = await this.studentService.createStudent(dto);
 
-    response.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 1000 * 60 * 60 * 24,
-    });
-
-    return { credentials };
+      res.setHeader('Set-Cookie', `token=${token}; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=${60 * 60 * 24}`);
+      res.status(200).json({ credentials });
+    } catch (error) {
+      console.error("Failed to register student:", error);
+      throw new InternalServerErrorException("Could not register student");
+    }
   }
 
   @Get()

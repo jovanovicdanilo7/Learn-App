@@ -37,7 +37,7 @@ function RegisterStudent() {
       setLoading(true);
       setEmailError('');
 
-      const response = await axios.post("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/students",
+      const response = await axios.post("https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/students",
         {
           firstName: data.firstName,
           lastName: data.lastName,

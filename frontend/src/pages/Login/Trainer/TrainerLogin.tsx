@@ -38,7 +38,7 @@ function TrainerLogin() {
 
   useEffect(() => {
   axios
-    .get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/user/me", { withCredentials: true })
+    .get("https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/user/me", { withCredentials: true })
     .then((res) => {
       setTitle("Hi, " + (res.data.firstName ?? "John") + "!");
     })

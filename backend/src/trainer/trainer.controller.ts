@@ -1,4 +1,4 @@
-import { Body, Controller, ForbiddenException, Get, HttpCode, InternalServerErrorException, Param, Post, Put, Res, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, InternalServerErrorException, Param, Post, Put, Res, UseGuards } from "@nestjs/common";
 import { Response } from "express";
 import { AuthGuard } from "@nestjs/passport";
 
@@ -17,18 +17,17 @@ export class TrainerController {
       email: string;
       specialization: string;
     },
-    @Res({ passthrough: true }) response: Response
+    @Res() res: Response
   ) {
-    const { token, credentials } = await this.trainerService.createTrainer(dto);
+    try {
+      const { token, credentials } = await this.trainerService.createTrainer(dto);
 
-    response.cookie('token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 1000 * 60 * 60 * 24,
-    });
-
-    return { credentials };
+      res.setHeader('Set-Cookie', `token=${token}; HttpOnly; Secure; SameSite=None; Path=/; Max-Age=${60 * 60 * 24}`);
+      res.status(200).json({ credentials });
+    } catch (error) {
+      console.error("Failed to register trainer:", error);
+      throw new InternalServerErrorException("Could not register trainer");
+    }
   }
 
   @Get()
