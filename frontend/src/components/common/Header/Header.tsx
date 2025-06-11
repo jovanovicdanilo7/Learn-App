@@ -34,14 +34,14 @@ function Header() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const { data } = await axios.get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/user/me",
+        const { data } = await axios.get("https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/user/me",
           {
             withCredentials: true,
           }
         );
 
         try {
-          await axios.get(`https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/students/${data.id}`,
+          await axios.get(`https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/students/${data.id}`,
             {
               withCredentials: true,
             }
@@ -63,7 +63,7 @@ function Header() {
 
   const handleLogout = async () => {
     try {
-      await axios.post('https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/auth/logout', {},
+      await axios.post('https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/auth/logout', {},
         {
           withCredentials: true
         }

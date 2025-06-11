@@ -48,29 +48,29 @@ function AddTrainer() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const { data: me } = await axios.get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/user/me",
+      const { data: me } = await axios.get("https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/user/me",
         {
           withCredentials: true,
         }
       );
       const [studentRes, trainersRes, usersRes, specsRes, linksRes] = await Promise.all([
-        axios.get(`https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/students/${me.id}`,
+        axios.get(`https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/students/${me.id}`,
           {
             withCredentials: true
           }
         ),
-        axios.get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/trainers",
+        axios.get("https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/trainers",
           {
             withCredentials: true
           }
         ),
-        axios.get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/user",
+        axios.get("https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/user",
           {
             withCredentials: true
           }
         ),
-        axios.get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/specializations"),
-        axios.get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/trainer-to-student",
+        axios.get("https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/specializations"),
+        axios.get("https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/trainer-to-student",
           {
             withCredentials: true
           }
@@ -107,7 +107,7 @@ function AddTrainer() {
 
       await Promise.all(
         newLinks.map((trainerId) =>
-          axios.post("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/trainer-to-student",
+          axios.post("https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/trainer-to-student",
             {
               trainerId,
               studentId,

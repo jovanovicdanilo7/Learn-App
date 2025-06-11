@@ -5,8 +5,11 @@ import { v4 as uuidv4 } from 'uuid'
 import { writeFile } from "fs/promises";
 import * as bcrypt from 'bcryptjs';
 import * as path from "path";
+import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 
 import { dbDocClient } from "src/database/dynamodb.service";
+
+const s3 = new S3Client({ region: 'eu-north-1' });
 
 @Injectable()
 export class AuthService {
@@ -161,11 +164,20 @@ export class UserService {
     const ext = matches[1];
     const buffer = Buffer.from(matches[2], 'base64');
     const filename = `${uuidv4()}.${ext}`;
-    const filePath = path.join(__dirname, '..', '..', 'uploads', 'photos', filename);
 
-    await writeFile(filePath, buffer);
+    const bucket = 'learn-app-user-photos-bucket';
+    const key = `photos/${filename}`;
 
-    const photoUrl = `${process.env.HOST_URL}/uploads/photos/${filename}`;
+    await s3.send(
+      new PutObjectCommand({
+        Bucket: bucket,
+        Key: key,
+        Body: buffer,
+        ContentType: `image/${ext}`,
+      }),
+    );
+
+    const photoUrl = `https://${bucket}.s3.eu-north-1.amazonaws.com/${key}`;
 
     await dbDocClient.send(
       new UpdateCommand({
@@ -337,12 +349,34 @@ export class UserService {
   }
 
   async removeUsersPhoto(userId: string) {
+    const userResult = await dbDocClient.send(
+      new GetCommand({
+        TableName: 'Users',
+        Key: { id: userId },
+      })
+    );
+
+    const photoUrl = userResult.Item?.photo;
+    if (photoUrl) {
+      const match = photoUrl.match(/\.com\/(.+)$/);
+      const key = match?.[1];
+
+      if (key) {
+        await s3.send(
+          new DeleteObjectCommand({
+            Bucket: 'learn-app-user-photos-bucket',
+            Key: key,
+          })
+        );
+      }
+    }
+
     await dbDocClient.send(
       new UpdateCommand({
         TableName: 'Users',
         Key: { id: userId },
         UpdateExpression: 'REMOVE photo',
-      }),
+      })
     );
 
     return {

@@ -40,7 +40,7 @@ function RegisterTrainer() {
   useEffect(() => {
     const fetchSpecializations = async () => {
       try {
-        const response = await axios.get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/specializations");
+        const response = await axios.get("https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/specializations");
         setSpecializations(response.data);
       } catch (err) {
         console.error("Failed to load specializations:", err);
@@ -55,7 +55,7 @@ function RegisterTrainer() {
       setLoading(true);
       setEmailError('');
 
-      const response = await axios.post("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/trainers",
+      const response = await axios.post("https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/trainers",
         {
           firstName: data.firstName,
           lastName: data.lastName,

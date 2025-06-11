@@ -60,7 +60,7 @@ function MyAccount() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { data: userData } = await axios.get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/user/me",
+        const { data: userData } = await axios.get("https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/user/me",
           {
             withCredentials: true,
           }
@@ -68,12 +68,12 @@ function MyAccount() {
         setUser(userData);
 
         const [trainerRes, studentRes] = await Promise.allSettled([
-          axios.get(`https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/trainers/${userData.id}`,
+          axios.get(`https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/trainers/${userData.id}`,
             {
               withCredentials: true
             }
           ),
-          axios.get(`https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/students/${userData.id}`,
+          axios.get(`https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/students/${userData.id}`,
             {
               withCredentials: true
             }
@@ -85,18 +85,18 @@ function MyAccount() {
           setTrainer(trainerData);
 
           const [specializationsRes, linksRes, studentsRes, usersRes] = await Promise.all([
-            axios.get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/specializations"),
-            axios.get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/trainer-to-student",
+            axios.get("https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/specializations"),
+            axios.get("https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/trainer-to-student",
               {
                 withCredentials: true
               }
             ),
-            axios.get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/students",
+            axios.get("https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/students",
               {
                 withCredentials: true
               }
             ),
-            axios.get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/user",
+            axios.get("https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/user",
               {
                 withCredentials: true
               }
@@ -128,18 +128,18 @@ function MyAccount() {
           setStudent(studentData);
 
           const [linksRes, trainersRes, specsRes, usersRes] = await Promise.all([
-            axios.get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/trainer-to-student",
+            axios.get("https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/trainer-to-student",
               {
                 withCredentials: true
               }
             ),
-            axios.get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/trainers",
+            axios.get("https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/trainers",
               {
                 withCredentials: true
               }
             ),
-            axios.get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/specializations"),
-            axios.get("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/user",
+            axios.get("https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/specializations"),
+            axios.get("https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/user",
               {
                 withCredentials: true
               }
@@ -176,7 +176,7 @@ function MyAccount() {
 
   const handleDeleteUser = async () => {
     try {
-      await axios.delete("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/user/me",
+      await axios.delete("https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/user/me",
         {
           withCredentials: true,
         }

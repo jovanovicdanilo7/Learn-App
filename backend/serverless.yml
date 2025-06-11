@@ -32,7 +32,9 @@ provider:
             - dynamodb:UpdateItem
             - dynamodb:GetItem
             - dynamodb:DeleteItem
-          Resource: arn:aws:dynamodb:eu-north-1:*:table/Students
+          Resource:
+            - arn:aws:dynamodb:eu-north-1:*:table/Students
+            - arn:aws:dynamodb:eu-north-1:*:table/Students/index/userId-index
 
         - Effect: Allow
           Action:
@@ -42,7 +44,9 @@ provider:
             - dynamodb:GetItem
             - dynamodb:Query
             - dynamodb:DeleteItem
-          Resource: arn:aws:dynamodb:eu-north-1:*:table/Trainers
+          Resource:
+            - arn:aws:dynamodb:eu-north-1:*:table/Trainers
+            - arn:aws:dynamodb:eu-north-1:*:table/Trainers/index/userId-index
 
         - Effect: Allow
           Action:
@@ -73,12 +77,19 @@ provider:
             - dynamodb:DeleteItem
           Resource: arn:aws:dynamodb:eu-north-1:*:table/Trainings
 
+        - Effect: Allow
+          Action:
+            - s3:PutObject
+            - s3:GetObject
+            - s3:DeleteObject
+          Resource: arn:aws:s3:::learn-app-user-photos-bucket/*
+
   httpApi:
     cors:
       allowedOrigins:
         - http://localhost:3000
         - http://learnapp-frontend-prod.s3-website.eu-north-1.amazonaws.com
-        - https://cloudfront-url.com
+        - https://dx01g0o1o4sy0.cloudfront.net
       allowedMethods:
         - GET
         - POST
@@ -106,7 +117,7 @@ plugins:
 
 custom:
   s3Sync:
-    - bucketName: learn-app-frontend-bucket-${self:provider.stage}
+    - bucketName: learnapp-backend-prod
       localDir: ../frontend/build
 
   esbuild:

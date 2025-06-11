@@ -19,7 +19,7 @@ function Footer() {
     }
 
     try {
-      const response = await axios.post("https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/subscriptions", { email });
+      const response = await axios.post("https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/subscriptions", { email });
       setFeedback("Thank you for subscribing!");
       setEmail("");
     } catch (error: any) {

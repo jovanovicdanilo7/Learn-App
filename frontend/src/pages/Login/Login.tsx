@@ -41,7 +41,7 @@ function Login() {
       setLoading(true);
 
       const response = await axios.post(
-        'https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/auth/login',
+        'https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/auth/login',
         {
           ...data
         },
@@ -55,14 +55,14 @@ function Login() {
         const userId = user.id;
 
         try {
-          await axios.get(`https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/trainers/${userId}`,
+          await axios.get(`https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/trainers/${userId}`,
             {
               withCredentials: true
             });
           navigate('/login/trainer');
         } catch (trainerError) {
           try {
-            await axios.get(`https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/students/${userId}`,
+            await axios.get(`https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/students/${userId}`,
               {
                 withCredentials: true
               });

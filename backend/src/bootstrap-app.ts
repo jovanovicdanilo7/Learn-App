@@ -10,7 +10,7 @@ export function setupApp(app: INestApplication) {
     origin: [
       'http://localhost:3000',
       'http://learnapp-frontend-prod.s3-website.eu-north-1.amazonaws.com',
-      'https://cloudfront-url.com',
+      'https://dx01g0o1o4sy0.cloudfront.net'
     ],
     credentials: true,
   });

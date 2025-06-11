@@ -37,7 +37,7 @@ function ChangePassword() {
     setServerError("");
     try {
       await axios.put(
-        "https://91zmzn87cd.execute-api.eu-north-1.amazonaws.com/user/update-password",
+        "https://v1yymau18l.execute-api.eu-north-1.amazonaws.com/user/update-password",
         {
           currentPassword: data.currentPassword,
           newPassword: data.newPassword
