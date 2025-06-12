@@ -310,7 +310,7 @@ function MyAccount() {
           </div>
 
           {isStudentAccount && (
-            <div className="absolute bottom-0 right-0 pr-4 pb-4">
+            <div className="mt-10 md:absolute md:bottom-0 md:right-0 md:pr-4 md:pb-4">
               <Button
                 variant="text"
                 className="bg-red-500 text-white hover:bg-red-600"
